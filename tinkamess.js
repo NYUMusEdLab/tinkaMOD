@@ -1,3 +1,5 @@
+const osc = require('osc');
+
 module.exports = class TinkaMess {
 
     constructor(data) {
@@ -36,7 +38,7 @@ module.exports = class TinkaMess {
         return type;
     }
 
-    send() {
+    formMessage() {
         let address = `/tinkamo/${this.type}`;
         let args = [];
 
@@ -58,7 +60,12 @@ module.exports = class TinkaMess {
                 return false;
         }
 
-        console.log(`Sending message to '${address}'`);
+        let formedMessage = {
+            address: address,
+            args: args
+        };
+
+        return formedMessage;
 
     }
 
