@@ -1,4 +1,5 @@
 const noble = require('noble');
+const TinkaMess = require('./tinkamess.js');
 
 const deviceName = 'Tinka';
 
@@ -46,16 +47,9 @@ function onConnect(error, services, characteristics) {
     });
 
     attempt.on('data', (data, isNotification) => {
-        dataFile = data.toJSON(data);
-        console.log(dataFile);
+        dataFile = data.toJSON().data;
+        let tinkamess = new TinkaMess(dataFile);
+        tinkamess.send();
+        //console.log(dataFile, dataFile.length);
     });
-}
-
-function figureOut() {
-    // 0b -> connect/disconnect
-    console.log('figure out');
-}
-
-function handleButton() {
-    console.log('button');
 }
