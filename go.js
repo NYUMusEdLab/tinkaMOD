@@ -4,14 +4,10 @@
 // applications running OSC. It connects to a Tinkamo device via Bluetooth and
 // then translates and forwards all messages it understands via OSC.
 
-// Currently Supports
-//      Connection
-//      Button
-//      Distance
-
 // Issues
 // If Tinkamo Block gets disconnected - this won't reconnect until restart.
 // Where should the udp ready and noble discover functions fit?
+// The potentiometers send a short unknown message sometimes, length 7
 // This will only work with one Tinkamo Brain
 
 const noble = require('noble');
@@ -84,14 +80,15 @@ function onConnect(error, services, characteristics) {
     // Uses the TinkaMess class to convert the buffer into a usable message
     attempt.on('data', (data, isNotification) => {
         dataFile = data.toJSON().data; // Convert buffer to JSON
-        //console.log(dataFile, dataFile.length);
+        // console.log(dataFile, dataFile.length);
 
         let tinkamess = new TinkaMess(dataFile);
         let formedMessage = tinkamess.formMessage();
+        // console.log(formedMessage);
 
-        if (formedMessage != false) {
+        if (formedMessage.args != false) {
             udpPort.send(formedMessage, localAddr, udpSend);
-            console.log(`Sent message to ${formedMessage.address}`);
+            //console.log(`Sent message to ${formedMessage.address}`);
         }
     });
 }
