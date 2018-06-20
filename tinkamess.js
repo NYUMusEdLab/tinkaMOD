@@ -79,7 +79,7 @@ module.exports = class TinkaMess {
     }
 
     /*
-        Based on the message type, use trigger the proper parsing method.
+        Based on the message type, trigger the proper parsing method.
             Output: OSC Message where
                 address contains the type of object
                 args contains a list of type/value pairs or 'false'

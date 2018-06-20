@@ -2471,12 +2471,12 @@
 			}
  ],
 		"parameters" : 		{
-			"obj-72" : [ "live.dial[5]", "live.dial", 0 ],
-			"obj-27" : [ "live.dial[2]", "live.dial", 0 ],
 			"obj-8" : [ "live.dial", "live.dial", 0 ],
+			"obj-72" : [ "live.dial[5]", "live.dial", 0 ],
+			"obj-62" : [ "live.dial[4]", "live.dial", 0 ],
+			"obj-27" : [ "live.dial[2]", "live.dial", 0 ],
 			"obj-12" : [ "live.dial[1]", "live.dial", 0 ],
-			"obj-51" : [ "live.dial[3]", "live.dial", 0 ],
-			"obj-62" : [ "live.dial[4]", "live.dial", 0 ]
+			"obj-51" : [ "live.dial[3]", "live.dial", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
