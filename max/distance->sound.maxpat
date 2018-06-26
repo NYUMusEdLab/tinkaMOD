@@ -38,6 +38,31 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-18",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 381.0, 662.0, 150.0, 33.0 ],
+					"style" : "",
+					"text" : "Include this to recieve Tinkamo Messages"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 293.0, 667.5, 86.0, 22.0 ],
+					"style" : "",
+					"text" : "tinkamo->max"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-115",
 					"maxclass" : "ezdac~",
 					"numinlets" : 2,
@@ -1199,8 +1224,8 @@
 					"id" : "obj-33",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
+					"numoutlets" : 2,
+					"outlettype" : [ "bang", "bang" ],
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
@@ -1241,12 +1266,38 @@
 						"boxes" : [ 							{
 								"box" : 								{
 									"comment" : "",
+									"id" : "obj-3",
+									"index" : 2,
+									"maxclass" : "outlet",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 77.0, 230.0, 30.0, 30.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "bang", "bang" ],
+									"patching_rect" : [ 28.0, 162.0, 68.0, 22.0 ],
+									"style" : "",
+									"text" : "t b b"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"comment" : "",
 									"id" : "obj-2",
 									"index" : 1,
 									"maxclass" : "outlet",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 28.0, 155.0, 30.0, 30.0 ],
+									"patching_rect" : [ 28.0, 230.0, 30.0, 30.0 ],
 									"style" : ""
 								}
 
@@ -1334,12 +1385,49 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-2", 0 ],
+									"destination" : [ "obj-6", 0 ],
 									"disabled" : 0,
 									"hidden" : 0,
 									"source" : [ "obj-30", 0 ]
 								}
 
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"disabled" : 0,
+									"hidden" : 0,
+									"source" : [ "obj-6", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"disabled" : 0,
+									"hidden" : 0,
+									"source" : [ "obj-6", 1 ]
+								}
+
+							}
+ ],
+						"styles" : [ 							{
+								"name" : "AudioStatus_Menu",
+								"default" : 								{
+									"bgfillcolor" : 									{
+										"type" : "color",
+										"color" : [ 0.294118, 0.313726, 0.337255, 1 ],
+										"color1" : [ 0.454902, 0.462745, 0.482353, 0.0 ],
+										"color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
+										"angle" : 270.0,
+										"proportion" : 0.39,
+										"autogradient" : 0
+									}
+
+								}
+,
+								"parentstyle" : "",
+								"multi" : 0
 							}
  ]
 					}
@@ -1799,9 +1887,8 @@
 					"destination" : [ "obj-87", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"midpoints" : [ 558.700012, 115.0, 539.0, 115.0, 539.0, 28.0, 407.5, 28.0 ],
-					"order" : 1,
-					"source" : [ "obj-35", 0 ]
+					"midpoints" : [ 642.700012, 81.0, 654.0, 81.0, 654.0, 12.0, 407.5, 12.0 ],
+					"source" : [ "obj-33", 1 ]
 				}
 
 			}
@@ -1810,7 +1897,6 @@
 					"destination" : [ "obj-97", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"order" : 0,
 					"source" : [ "obj-35", 0 ]
 				}
 
@@ -2471,12 +2557,12 @@
 			}
  ],
 		"parameters" : 		{
-			"obj-8" : [ "live.dial", "live.dial", 0 ],
-			"obj-72" : [ "live.dial[5]", "live.dial", 0 ],
-			"obj-62" : [ "live.dial[4]", "live.dial", 0 ],
-			"obj-27" : [ "live.dial[2]", "live.dial", 0 ],
 			"obj-12" : [ "live.dial[1]", "live.dial", 0 ],
-			"obj-51" : [ "live.dial[3]", "live.dial", 0 ]
+			"obj-51" : [ "live.dial[3]", "live.dial", 0 ],
+			"obj-27" : [ "live.dial[2]", "live.dial", 0 ],
+			"obj-62" : [ "live.dial[4]", "live.dial", 0 ],
+			"obj-72" : [ "live.dial[5]", "live.dial", 0 ],
+			"obj-8" : [ "live.dial", "live.dial", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
@@ -2506,6 +2592,12 @@
 , 			{
 				"name" : "yafr2.maxpat",
 				"bootpath" : "/Users/Shared/Max 7/Examples/effects/reverb/lib",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "tinkamo->max.maxpat",
+				"bootpath" : "~/Desktop/T-Try/max",
 				"type" : "JSON",
 				"implicit" : 1
 			}
