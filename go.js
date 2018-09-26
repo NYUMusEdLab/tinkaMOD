@@ -13,6 +13,7 @@
 const noble = require('noble');
 const osc = require('osc');
 const TinkaMess = require('./tinkamess.js');
+const TinkaCore = require('./tinkacore.js');
 
 const deviceName = 'Tinka';
 const udpListen = 4444;
@@ -43,52 +44,11 @@ udpPort.on("ready", function () {
         foundName = peripheral.advertisement.localName;
         if (peripheral.advertisement.localName === deviceName) {
             console.log(`Connecting to '${foundName}' ${peripheral.id}`);
-            connectAndSetUp(peripheral);
+            let tinkacore = new TinkaCore(peripheral);
+            tinkacore.connect();
             noble.stopScanning();
         } else {
             console.log(`Skipping '${foundName}' ${peripheral.id}`);
         }
     });
 });
-
-// Connect to the Tinkamo device
-function connectAndSetUp(peripheral) {
-    peripheral.connect(function(error) {
-        console.log('Discovering services & characteristics');
-        peripheral.discoverAllServicesAndCharacteristics(onConnect);
-    });
-    peripheral.on('disconnect', () => console.log('disconnected'));
-}
-
-// Once connected, attempt to subscribe to messages it puts out.
-function onConnect(error, services, characteristics) {
-    if (error) {
-        console.log('Error discovering services and characteristics ' + error);
-        return;
-    }
-
-    var attempt = characteristics[0];
-
-    attempt.subscribe((err) => {
-        if (err) {
-            console.log('Error subscribing to notifications', err);
-        } else {
-            console.log('Subscribed to notifications');
-        }
-    });
-
-    // Uses the TinkaMess class to convert the buffer into a usable message
-    attempt.on('data', (data, isNotification) => {
-        dataFile = data.toJSON().data; // Convert buffer to JSON
-        // console.log(dataFile, dataFile.length);
-
-        let tinkamess = new TinkaMess(dataFile);
-        let formedMessage = tinkamess.formMessage();
-        // console.log(formedMessage);
-
-        if (formedMessage.args != false) {
-            udpPort.send(formedMessage, localAddr, udpSend);
-            //console.log(`Sent message to ${formedMessage.address}`);
-        }
-    });
-}

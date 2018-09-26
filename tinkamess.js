@@ -13,14 +13,50 @@
     or more logical ways of using their protocol.
 */
 
+/*
+    Data Format
+        0: 0x5A
+        1: 0xAB
+        2: Total packet length minus initial two bytes
+        3: N/A
+        4: N/A
+        5: 0x02
+        6: Model ID
+        7: N/A
+        8: Unique Command ID
+        9+: Command
+*/
+
 // Currently Supports
-//      Connection: [0|1], string containing name of sensor attached
-//      Button: [0|1]
-//      Knob: float ranging from -10 to 10
-//      Slider: float ranging from 0 to 10
-//      Joystick: horizontal float, vertical float ranging from -10 to 10
-//      Distance: float ranging from 0 to 20
-//      Color: red int, green int, blue int ranging from 0 to 255
+/*
+     Connection:
+        ID: 0
+        Output: [0|1], string containing name of sensor attached
+     Button:
+        ID: 1
+        Output: [0|1]
+     Knob:
+        ID: 2
+        Output: float ranging from -10 to 10
+     Slider:
+        ID: 3
+        Output: float ranging from 0 to 10
+     Joystick:
+        ID: 4
+        Output: horizontal float, vertical float ranging from -10 to 10
+     Distance:
+        ID: 23
+        Output: float ranging from 0 to 20
+     Color:
+        ID: 27
+        Output: red int, green int, blue int ranging from 0 to 255
+*/
+
+// Class TinkaModule
+//  Sensor Connected
+// ID
+// Message processing functions
+// Sensor Class
 
 module.exports = class TinkaMess {
 

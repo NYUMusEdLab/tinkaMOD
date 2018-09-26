@@ -1500,19 +1500,6 @@
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-13",
-					"linecount" : 3,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 1094.0, 269.0, 78.0, 47.0 ],
-					"style" : "",
-					"text" : "Parameters:\nMin Value\nMax Value"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-11",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -2557,12 +2544,12 @@
 			}
  ],
 		"parameters" : 		{
-			"obj-12" : [ "live.dial[1]", "live.dial", 0 ],
-			"obj-51" : [ "live.dial[3]", "live.dial", 0 ],
 			"obj-27" : [ "live.dial[2]", "live.dial", 0 ],
 			"obj-62" : [ "live.dial[4]", "live.dial", 0 ],
-			"obj-72" : [ "live.dial[5]", "live.dial", 0 ],
-			"obj-8" : [ "live.dial", "live.dial", 0 ]
+			"obj-8" : [ "live.dial", "live.dial", 0 ],
+			"obj-12" : [ "live.dial[1]", "live.dial", 0 ],
+			"obj-51" : [ "live.dial[3]", "live.dial", 0 ],
+			"obj-72" : [ "live.dial[5]", "live.dial", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
