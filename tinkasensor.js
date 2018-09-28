@@ -3,12 +3,12 @@
 class TinkaSensor {
     constructor() {
         this.id = 0;
-        this.name = 'None';
+        this.name = 'unsupported';
         this.return_types = ['i'];
     }
 
     sense(command_id, command) {
-        return;
+        return 0;
     }
 
     get_osc_args(command_id, command) {
@@ -183,6 +183,7 @@ function mapToRange(num, in_min, in_max, out_min, out_max) {
 }
 
 module.exports = {
+  TinkaSensor: TinkaSensor,
   Button: Button,
   Knob: Knob,
   Slider: Slider,

@@ -12,13 +12,18 @@
 
 const noble = require('noble');
 const osc = require('osc');
-const TinkaMess = require('./tinkamess.js');
 const TinkaCore = require('./tinkacore.js');
 
 const deviceName = 'Tinka';
 const udpListen = 4444;
 const udpSend = 4445;
 const localAddr = "0.0.0.0"
+
+let tinkacores = {}; // Object to hold all tinkacores
+TinkaCore.core_ids = {
+    connected: new Set([]),
+    disconnected: new Set([])
+};
 
 // Create an osc.js UDP Port listening on port 44444.
 const udpPort = new osc.UDPPort({
@@ -30,7 +35,7 @@ const udpPort = new osc.UDPPort({
 // Start scanning for Bluetooth devices
 noble.on('stateChange', state => {
     if (state === 'poweredOn') {
-        noble.startScanning();
+        noble.startScanning([], true); // Allow duplicates
     } else {
         noble.stopScanning();
     }
@@ -41,14 +46,31 @@ udpPort.open();
 udpPort.on("ready", function () {
     console.log('OSC Ready');
     noble.on('discover', peripheral => {
-        foundName = peripheral.advertisement.localName;
-        if (peripheral.advertisement.localName === deviceName) {
-            console.log(`Connecting to '${foundName}' ${peripheral.id}`);
-            let tinkacore = new TinkaCore(peripheral);
-            tinkacore.connect();
-            noble.stopScanning();
-        } else {
-            console.log(`Skipping '${foundName}' ${peripheral.id}`);
+        let found_name = peripheral.advertisement.localName;
+        let found_id = peripheral.id;
+
+        if (found_name === deviceName) {
+            // noble.stopScanning();
+            // console.log(tinkacores);
+            add_tinkacore(peripheral);
+            // console.log(`Connecting to '${found_name}' ${found_id}`);
+
         }
     });
 });
+
+function add_tinkacore(peripheral) {
+    // console.log('here');
+    // console.log(tinkacores);
+    console.log(Object.keys(tinkacores).length);
+    let found_id = peripheral.id
+    if (!(TinkaCore.core_ids.connected.has(found_id))) {
+        tinkacores[found_id] = new TinkaCore(peripheral);
+        tinkacores[found_id].connect();
+        return
+    }
+    else if (TinkaCore.core_ids.disconnected.has(found_id)) {
+        tinkacores[found_id].connect();
+    }
+    return;
+}
