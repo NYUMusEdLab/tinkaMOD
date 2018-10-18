@@ -62,14 +62,14 @@ udpPort.on("ready", function () {
 function add_tinkacore(peripheral) {
     // console.log('here');
     // console.log(tinkacores);
-    console.log(Object.keys(tinkacores).length);
     let found_id = peripheral.id
-    if (!(TinkaCore.core_ids.connected.has(found_id))) {
+    if (TinkaCore.core_ids.disconnected.has(found_id)) {
+        delete tinkacores[found_id]; // Does not work...
         tinkacores[found_id] = new TinkaCore(peripheral);
         tinkacores[found_id].connect();
-        return
     }
-    else if (TinkaCore.core_ids.disconnected.has(found_id)) {
+    else if (!(TinkaCore.core_ids.connected.has(found_id))) {
+        tinkacores[found_id] = new TinkaCore(peripheral);
         tinkacores[found_id].connect();
     }
     return;

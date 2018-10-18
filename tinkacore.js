@@ -32,7 +32,8 @@ module.exports = class TinkaCore {
         });
         self.connected = true;
 
-        self.peripheral.on('disconnect', self.disconnect);
+        // Try .once!!
+        self.peripheral.once('disconnect', self.disconnect);
 
         return true;
     }
@@ -77,6 +78,14 @@ module.exports = class TinkaCore {
         TinkaCore.remove_core(this.id);
         console.log('disconnected');
         return false;
+    }
+
+    reconnect(peripheral) {
+        this.connected = false;
+        this.peripheral = peripheral; // this does not work how we want;
+        TinkaCore.add_core(this.id);
+        console.log('reconnected');
+        return true;
     }
 
     connect_sensor(sensor_id) {
