@@ -60,9 +60,10 @@ module.exports = class TinkaCore {
 
         attempt.on('data', (data, isNotification) => {
             let packet = data.toJSON().data; // Convert buffer to JSON
-            console.log(packet, packet.length);
+            // console.log(packet, packet.length);
 
             self.parse_packet(packet);
+
             // let formedMessage = tinkamess.formMessage();
             // console.log(formedMessage);
 
@@ -135,7 +136,7 @@ module.exports = class TinkaCore {
         let command = packet.slice(9);
 
         switch (sensor_id) {
-            case 0: // Connect/Disconnect
+            case 0: // Connect/Disconnecta
                 let new_sensor_id = command[0];
                 if (new_sensor_id == 255) { this.disconnect_sensor(); }
                 else { this.connect_sensor(new_sensor_id); }
