@@ -15,18 +15,19 @@ class TinkaSensor {
         let reading = this.sense(command_id, command);
         let args = [];
 
-        if (!reading) { // If false or undefined
+        if (!reading && !(reading === 0)) { // If false or undefined
             return false;
         }
 
-        for (let i=0; i<return_types.length; i++) {
+        for (let i=0; i<this.return_types.length; i++) {
             args.push(
                 {
                     type: this.return_types[i],
-                    value: reading[i] | reading
+                    value: reading[i] || reading
                 }
             )
         }
+        return args;
     }
 
     get_id() {
@@ -82,7 +83,7 @@ class Slider extends TinkaSensor {
 
     sense(command_id, command) {
         let sliderReading = 255 - command[0];
-        let sliderNum = this.mapToRange(sliderReading, 0, 255, 0, 10);
+        let sliderNum = mapToRange(sliderReading, 0, 255, 0, 10);
 
         return sliderNum;
     }
@@ -106,8 +107,8 @@ class Joystick extends TinkaSensor {
         let horizontalIn = horizontalInt + (horizontalDec/255);
         let verticalIn = verticalInt + (verticalDec/255);
 
-        let horizontalNum = this.mapToRange(horizontalIn, 0, 4, -10, 10);
-        let verticalNum = -1 * this.mapToRange(verticalIn, 0, 4, -10, 10);
+        let horizontalNum = mapToRange(horizontalIn, 0, 4, -10, 10);
+        let verticalNum = -1 * mapToRange(verticalIn, 0, 4, -10, 10);
 
         return [horizontalNum, verticalNum];
     }
@@ -135,6 +136,8 @@ class Distance extends TinkaSensor {
     }
 }
 
+// The color sensor seems like it is bugging out and will periodically flash
+// all black... An extra if-statement prevents this problem...
 class Color extends TinkaSensor {
     constructor() {
         super();
@@ -145,15 +148,17 @@ class Color extends TinkaSensor {
     }
 
     sense(command_id, command) {
-        let distNum = create_float(command);
+        let red = command[0];
+        let green = command[1];
+        let blue = command[2];
+        let brightness = command[3]; // Not used - unsure what it is
 
-        // Distance sensor sends three messages when it gets out of range
-        // Right now I am returning false to ignore - could return 120
-        if (distNum > 60) {
+        // Hardware bug (feature?) - If all zeros, ignore
+        if (!(red + green + blue)) {
             return false;
         }
 
-        return distNum;
+        return [red, green, blue]
     }
 }
 

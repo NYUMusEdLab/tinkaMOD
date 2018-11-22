@@ -2,13 +2,21 @@ const TinkaSensor = require('./tinkasensor.js');
 
 module.exports = class TinkaCore {
 
-    constructor(peripheral) {
+    // Coming from the Static variable, this might also have a number
+    // for when it was added to the array
+    constructor(peripheral, udp) {
         // Instance Variables
         this.peripheral = peripheral; // noble bluetooth component
         this.id = peripheral.id; // tinkamo id
         this.connected = true;
         this.sensor_connected = false;
         this.sensor = null;
+
+        // OSC Variables
+        this.send_osc = true;
+        this.udp_port = udp.udp_port;
+        this.local_address = udp.local_address;
+        this.udp_send = udp.udp_send;
 
         // Static Variable
         TinkaCore.core_ids = TinkaCore.core_ids || {
@@ -27,12 +35,12 @@ module.exports = class TinkaCore {
                console.log(error);
                return;
            }
-           // Is their a way to remove this event listener???
+           // Is there a way to remove this event listener???
             self.peripheral.discoverAllServicesAndCharacteristics(self.listen.bind(self));
         });
         self.connected = true;
 
-        // Try .once!!
+        // Only call disconnect once
         self.peripheral.once('disconnect', self.disconnect);
 
         return true;
@@ -61,16 +69,7 @@ module.exports = class TinkaCore {
         attempt.on('data', (data, isNotification) => {
             let packet = data.toJSON().data; // Convert buffer to JSON
             // console.log(packet, packet.length);
-
             self.parse_packet(packet);
-
-            // let formedMessage = tinkamess.formMessage();
-            // console.log(formedMessage);
-
-            /*if (formedMessage.args != false) {
-                udpPort.send(formedMessage, localAddr, udpSend);
-                //console.log(`Sent message to ${formedMessage.address}`);
-            }*/
         });
     }
 
@@ -114,12 +113,17 @@ module.exports = class TinkaCore {
                 console.log('not yet implemented');
         }
         this.sensor_connected = true;
+
+        if (this.send_osc) {this.send_on_sensor_change();}
+
         return this.sensor;
     }
 
     disconnect_sensor() {
         this.sensor_connected = false;
         this.sensor = null;
+
+        if (this.send_osc) {this.send_on_sensor_change();}
         return false;
     }
 
@@ -136,7 +140,7 @@ module.exports = class TinkaCore {
         let command = packet.slice(9);
 
         switch (sensor_id) {
-            case 0: // Connect/Disconnecta
+            case 0: // Connect/Disconnect
                 let new_sensor_id = command[0];
                 if (new_sensor_id == 255) { this.disconnect_sensor(); }
                 else { this.connect_sensor(new_sensor_id); }
@@ -144,14 +148,67 @@ module.exports = class TinkaCore {
             default:
                 if (!this.sensor_connected) { this.connect_sensor(sensor_id); }
                 if (sensor_id != this.sensor.id) { this.connect_sensor(sensor_id); }
-                let reading = this.sensor.sense(command_id, command);
-                console.log(this.sensor.name + ': ', reading);
+
+                if (this.send_osc) {
+                    let osc_args = this.sensor.get_osc_args(command_id, command);
+                    let address = this.create_address(this.sensor.name);
+                    this.send_udp_message(address, osc_args);
+                    console.log(this.sensor.name, ' OSC Message: ', osc_args);
+                }
+                else {
+                    let reading = this.sensor.sense(command_id, command);
+                    console.log(this.sensor.name + ': ', reading);
+                }
         }
+    }
+
+    // OSC Methods
+    send_udp_message(address, osc_args) {
+        if (osc_args != false) {
+            let formed_message = {
+                'address': address,
+                'args': osc_args
+            }
+            this.udp_port.send(formed_message,
+                this.local_address, this.udp_send);
+            return true;
+        }
+        return false;
+    }
+
+    send_on_sensor_change() {
+        let current_sensor_name;
+        if (this.sensor == null) {current_sensor_name = 'none';}
+        else {current_sensor_name = this.sensor.name;}
+
+        let address = this.create_address('connection');
+        let args = [
+            {
+                type: "i",
+                value: this.sensor_connected
+            },
+            {
+                type: "s",
+                value: current_sensor_name
+            }
+        ];
+
+        this.send_udp_message(address, args);
+    }
+
+    // At some point this may include extra information like a number referring
+    // to the Tinkamo Core sending the message
+    create_address(address_value) {
+        return `/tinkamo/${address_value}`;
+    }
+
+    toggle_osc() {
+        this.send_osc = !this.send_osc;
+        return this.send_osc;
     }
 
     // Static Methods for keeping track globally of
     // what cores we have connected
-
     static add_core(peripheral_id) {
         // Check if TinkaCore is undefined
         if (TinkaCore.core_ids.disconnected.has(peripheral_id)) {
