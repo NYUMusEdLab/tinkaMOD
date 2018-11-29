@@ -1,3 +1,43 @@
+/*
+    Data Format
+        0: 0x5A
+        1: 0xAB
+        2: Total packet length minus initial two bytes
+        3: N/A
+        4: N/A
+        5: 0x02
+        6: Model ID
+        7: N/A
+        8: Unique Command ID
+        9+: Command
+*/
+
+// Currently Supports
+/*
+     Connection:
+        ID: 0
+        Output: [0|1], string containing name of sensor attached
+     Button:
+        ID: 1
+        Output: [0|1]
+     Knob:
+        ID: 2
+        Output: float ranging from -10 to 10
+     Slider:
+        ID: 3
+        Output: float ranging from 0 to 10
+     Joystick:
+        ID: 4
+        Output: horizontal float, vertical float ranging from -10 to 10
+     Distance:
+        ID: 23
+        Output: float ranging from 0 to 20
+     Color:
+        ID: 27
+        Output: red int, green int, blue int ranging from 0 to 255
+*/
+
+
 const TinkaSensor = require('./tinkasensor.js');
 
 module.exports = class TinkaCore {
@@ -110,6 +150,7 @@ module.exports = class TinkaCore {
                 this.sensor = new TinkaSensor.Color();
                 break;
             default:
+                this.sensor = new TinkaSensor.TinkaSensor();
                 console.log('not yet implemented');
         }
         this.sensor_connected = true;
@@ -180,6 +221,7 @@ module.exports = class TinkaCore {
         let current_sensor_name;
         if (this.sensor == null) {current_sensor_name = 'none';}
         else {current_sensor_name = this.sensor.name;}
+
 
         let address = this.create_address('connection');
         let args = [

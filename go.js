@@ -5,10 +5,7 @@
 // then translates and forwards all messages it understands via OSC.
 
 // Issues
-// If Tinkamo Block gets disconnected - this won't reconnect until restart.
-// Where should the udp ready and noble discover functions fit?
 // The potentiometers send a short unknown message sometimes, length 7
-// This will only work with one Tinkamo Brain
 
 const noble = require('noble');
 const osc = require('osc');
@@ -17,7 +14,7 @@ const TinkaCore = require('./tinkacore.js');
 const deviceName = 'Tinka';
 const udpListen = 4444;
 const udpSend = 4445;
-const localAddr = "0.0.0.0"
+const localAddr = "0.0.0.0";
 
 let tinkacores = {}; // Object to hold all tinkacores
 TinkaCore.core_ids = {
