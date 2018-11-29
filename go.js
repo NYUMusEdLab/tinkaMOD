@@ -4,6 +4,10 @@
 // applications running OSC. It connects to a Tinkamo device via Bluetooth and
 // then translates and forwards all messages it understands via OSC.
 
+// TODO
+// Figure out how to differentiate between cores and motors
+// Grant user control of when to connect to tinkamo objects
+
 // Issues
 // The potentiometers send a short unknown message sometimes, length 7
 
@@ -12,9 +16,14 @@ const osc = require('osc');
 const TinkaCore = require('./tinkacore.js');
 
 const deviceName = 'Tinka';
+
+// Open Sound Control Variables
 const udpListen = 4444;
 const udpSend = 4445;
 const localAddr = "0.0.0.0";
+
+// Other global variables
+let scan_on = true; // Not currently used
 
 let tinkacores = {}; // Object to hold all tinkacores
 TinkaCore.core_ids = {

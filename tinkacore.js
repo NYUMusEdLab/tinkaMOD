@@ -91,6 +91,9 @@ module.exports = class TinkaCore {
         // It must be passed in through bind since this is a callback function
         let self = this;
 
+        console.log(services);
+        console.log(characteristics);
+
         if (error) {
             console.log('Error discovering services and characteristics ' + error);
             return;
