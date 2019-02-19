@@ -59,12 +59,6 @@ function add_tinkacore(id, characteristics) {
     return tinkacores;
 }
 
-function handleChange(event) {
-    // Produces the same array as used in the Node code
-    let buff = new Uint8Array(event.target.value.buffer);
-    console.log(buff);
-}
-
 function onDisconnected(event) {
     let device = event.target;
     let disconnected_id = device.id;
