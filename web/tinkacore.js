@@ -21,11 +21,22 @@ class TinkaCore {
 
     connect() {
         let self = this;
-        self.characteristics[0].startNotifications();
+
+        // https://stackoverflow.com/questions/33859113/
+        // javascript-removeeventlistener-not-working-inside-a-class
+        self.who_am_i_handler = self.who_am_i.bind(self);
+
+        self.characteristics[0].addEventListener('characteristicvaluechanged',
+                                                 self.who_am_i_handler);
+
+        self.characteristics[0].startNotifications().then(function(characteristic) {
+
+            // Clean this up - should use the motor sensor class
+            let motor = new Uint8Array([90,171,10,0,0,2,5,0,0,0,0,0]);
+            self.characteristics[1].writeValue(motor);
+        });
 
         // If 'self' is not bound here. Then the event itself becomes 'self'
-        self.characteristics[0].addEventListener('characteristicvaluechanged',
-                    self.parse_packet.bind(self));
 
         return true;
     }
@@ -115,6 +126,35 @@ class TinkaCore {
                     console.log(this.sensor.name + ': ', reading);
                 }
         }
+    }
+
+    who_am_i(event) {
+        let self = this;
+        let found = false;
+        let packet = new Uint8Array(event.target.value.buffer);
+
+        // We are a motor
+        // Motor responds with whether the message succeeded or failed
+        if (packet.length == 10) {
+            console.log('Motor!');
+            found = true;
+        }
+
+        // We are a sensor
+        else if (packet.length == 13) {
+            console.log('TinkaCore!');
+            found = true;
+        }
+
+        if (found) {
+            // self.parse_packet(event);
+            self.characteristics[0].removeEventListener('characteristicvaluechanged',
+                        self.who_am_i_handler);
+            self.characteristics[0].addEventListener('characteristicvaluechanged',
+                        self.parse_packet.bind(self));
+        }
+
+        return found;
     }
 
     // Static Methods for keeping track globally of
