@@ -66,3 +66,6 @@ Color:
     Output: red int, green int, blue int ranging from 0 to 255
     OSC Address: /tinkamo/color
 ```
+
+### References
+[Tinkamo Bluetooth Protocols](/protocols/protocols.md)
