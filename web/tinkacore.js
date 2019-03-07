@@ -141,13 +141,15 @@ class TinkaCore {
         }
 
         // We are a sensor
+        // Core responds with a connect/disconnect message (almost)
         else if (packet.length == 13) {
             console.log('TinkaCore!');
+            packet[6] = 0; // Swap the 5 with a 0
             found = true;
         }
 
         if (found) {
-            // self.parse_packet(event);
+            self.parse_packet(event);
             self.characteristics[0].removeEventListener('characteristicvaluechanged',
                         self.who_am_i_handler);
             self.characteristics[0].addEventListener('characteristicvaluechanged',
