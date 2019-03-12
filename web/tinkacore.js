@@ -32,8 +32,9 @@ class TinkaCore {
         self.characteristics[0].startNotifications().then(function(characteristic) {
 
             // Clean this up - should use the motor sensor class
-            let motor = new Uint8Array([90,171,10,0,0,2,5,0,0,0,0,0]);
-            self.characteristics[1].writeValue(motor);
+	    let motor = new Motor();
+	    let motorMessage = motor.createSpeedMotorMessage(0,3,0);
+            self.characteristics[1].writeValue(motorMessage);
         });
 
         // If 'self' is not bound here. Then the event itself becomes 'self'
@@ -60,27 +61,30 @@ class TinkaCore {
 
     connect_sensor(sensor_id) {
         switch (sensor_id) {
-            case 1:
-                this.sensor = new Button();
-                break;
-            case 2:
-                this.sensor = new Knob();
-                break;
-            case 3:
-                this.sensor = new Slider();
-                break;
-            case 4:
-                this.sensor = new Joystick();
-                break;
-            case 23:
-                this.sensor = new Distance();
-                break;
-            case 27:
-                this.sensor = new Color();
-                break;
-            default:
-                this.sensor = new TinkaSensor();
-                console.log('not yet implemented');
+        case 1:
+            this.sensor = new Button();
+            break;
+        case 2:
+            this.sensor = new Knob();
+            break;
+        case 3:
+            this.sensor = new Slider();
+            break;
+        case 4:
+            this.sensor = new Joystick();
+            break;
+	case 5:
+	    this.sensor = new Motor();
+	    break;
+        case 23:
+            this.sensor = new Distance();
+            break;
+        case 27:
+            this.sensor = new Color();
+            break;
+        default:
+            this.sensor = new TinkaTop();
+            console.log('not yet implemented');
         }
         this.sensor_connected = true;
         console.log('Sensor connected: ', this.sensor.name);
