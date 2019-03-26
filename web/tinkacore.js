@@ -31,9 +31,7 @@ class TinkaCore {
 
         self.characteristics[0].startNotifications().then(function(characteristic) {
 
-            // Clean this up - should use the motor sensor class
-	    let motor = new Motor();
-	    let motorMessage = motor.createSpeedMotorMessage(0,3,0);
+	    let motorMessage = TinkaCore.createMessage(0,0,0);
             self.characteristics[1].writeValue(motorMessage);
         });
 
@@ -178,6 +176,14 @@ class TinkaCore {
         TinkaCore.core_ids.connected.delete(peripheral_id);
         TinkaCore.core_ids.disconnected.add(peripheral_id);
         return peripheral_id;
+    }
+
+
+    //handles all kinds of messages
+    //only motor message for now
+    static createMessage(direction, intensityInt, intensityDecimal){
+        var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
+        return motorMessage;
     }
 
 }
