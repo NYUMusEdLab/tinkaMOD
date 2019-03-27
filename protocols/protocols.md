@@ -3,18 +3,18 @@
 # Table of Module ID
 Each type of module has its unique numeric ID. It is used in the BLE protocol to tell the type of the module.
 
-0 Core
-1 Button
-2 Knob
-3 Slider
-4 Joystick (Analog)
-5 Motor
-6 Servo
-11 Pixel Display (LED Matrix)
-22 Path Finder
-23 Distance Sensor
-24 Sound Sensor
-27 Color Sensor
+- 0 Core
+- 1 Button
+- 2 Knob
+- 3 Slider
+- 4 Joystick (Analog)
+- 5 Motor
+- 6 Servo
+- 11 Pixel Display (LED Matrix)
+- 22 Path Finder
+- 23 Distance Sensor
+- 24 Sound Sensor
+- 27 Color Sensor
 
 # Discovering stage
 When the module is powered on, not connected, the LED will blink in white. It keeps sending advertising data to allow the app to discover it.
