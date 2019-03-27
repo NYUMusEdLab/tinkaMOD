@@ -1,6 +1,6 @@
 # Tinkamo Bluetooth Protocols
 
-![](Tinkamo BLE Protocol Data Format.png)
+![](tinkamo-ble-brotocol-data-format.png)
 
 The protocol is made of a fixed header, the gray part, and a various body, the orange part.
 
