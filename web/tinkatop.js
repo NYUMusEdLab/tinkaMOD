@@ -1,16 +1,31 @@
 // TODO - Add Print Mode
-
+/** ***Class that represents a TinkaTop***
+ */
 class TinkaTop {
+    /**
+     * Creates an instance of the TinkaTop class
+     */
     constructor() {
         this.id = 0;
         this.name = 'unsupported';
         this.return_types = ['i'];
     }
-
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {number} Always returns 0
+     */
     sense(command_id, command) {
         return 0;
     }
 
+    /**
+     * DESCRIPTION HERE 
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*} 
+     */
     get_osc_args(command_id, command) {
         let reading = this.sense(command_id, command);
         let args = [];
@@ -29,17 +44,29 @@ class TinkaTop {
         }
         return args;
     }
-
+    /** Get the value of id
+     *  @returns {number}
+     */
     get_id() {
         return this.id;
     }
 
+    /** Get the value of name
+     * @returns {string}
+     */
     get_name() {
         return this.name;
     }
 }
 
+/**
+ * Class representing a Button TinkaTop
+ * @extends TinkaTop
+ */
 class Button extends TinkaTop {
+    /**
+     * Creates an instance of the Button class
+     */
     constructor() {
         super();
         this.id = 1;
@@ -47,13 +74,26 @@ class Button extends TinkaTop {
         this.return_types = ['i'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let buttonState = command[0];
         return buttonState;
     }
 }
 
+/**
+ * Class representing a Knob TinkaTop
+ * @extends TinkaTop
+ */
 class Knob extends TinkaTop {
+    /**
+     * Creates an instance of the Knob class
+     */
     constructor() {
         super();
 
@@ -62,6 +102,12 @@ class Knob extends TinkaTop {
         this.return_types = ['f'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let fullNum = create_float(command);
 
@@ -72,7 +118,14 @@ class Knob extends TinkaTop {
     }
 }
 
+/**
+ * Class representing a Slider TinkaTop
+ * @extends TinkaTop
+ */
 class Slider extends TinkaTop {
+    /**
+     * Creates an instance of the Slider class
+     */
     constructor() {
         super();
 
@@ -81,6 +134,12 @@ class Slider extends TinkaTop {
         this.return_types = ['f'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let sliderReading = 255 - command[0];
         let sliderNum = mapToRange(sliderReading, 0, 255, 0, 10);
@@ -89,7 +148,14 @@ class Slider extends TinkaTop {
     }
 }
 
+/**
+ * Class representing a Joystick TinkaTop
+ * @extends TinkaTop
+ */
 class Joystick extends TinkaTop {
+    /**
+     * Creates an instance of the Joystick class
+     */
     constructor() {
         super();
 
@@ -98,6 +164,12 @@ class Joystick extends TinkaTop {
         this.return_types = ['f', 'f'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let horizontalInt = command[0];
         let horizontalDec = command[1];
@@ -114,7 +186,14 @@ class Joystick extends TinkaTop {
     }
 }
 
+/**
+ * Class representing a Distance TinkaTop
+ * @extends TinkaTop
+ */
 class Distance extends TinkaTop {
+    /**
+     * Creates an instance of the Distance class
+     */
     constructor() {
         super();
 
@@ -123,6 +202,12 @@ class Distance extends TinkaTop {
         this.return_types = ['f'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let distNum = create_float(command);
 
@@ -138,7 +223,14 @@ class Distance extends TinkaTop {
 
 // The color sensor seems like it is bugging out and will periodically flash
 // all black... An extra if-statement prevents this problem...
+/**
+ * Class representing a Color TinkaTop
+ * @extends TinkaTop
+ */
 class Color extends TinkaTop {
+    /**
+     * Creates an instance of the Color class
+     */
     constructor() {
         super();
 
@@ -147,6 +239,12 @@ class Color extends TinkaTop {
         this.return_types = ['i', 'i', 'i'];
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command) {
         let red = command[0];
         let green = command[1];
@@ -162,39 +260,60 @@ class Color extends TinkaTop {
     }
 }
 
+/**
+ * Class representing a Motor TinkaTop
+ * @extends TinkaTop
+ */
 class Motor extends TinkaTop {
+    /**
+     * Creates an instance of the Motor class
+     */
     constructor(){
-	super();
+        super();
 
-	this.id = 5;
-	this.name = 'motor';
-	this.return_type = ['i', 'f'];
+        this.id = 5;
+        this.name = 'motor';
+        this.return_type = ['i', 'f'];
 
-	console.log("THIS WORKS");
+        console.log("THIS WORKS");
     }
-
+       
+    /**
+     * DESCRIPTION HERE
+     * @param {*} command_id 
+     * @param {*} command 
+     * @returns {*}
+     */
     sense(command_id, command){
-	let direction = command[0];
-	let intensityInt = command[1];
-	let intensityDecimal = command[2];
-	let intensityFloat = create_float([intensityInt, intensityDecimal]);
-	if(intensityFloat != false)
-	    return [direction, intensityFloat];
+        let direction = command[0];
+        let intensityInt = command[1];
+        let intensityDecimal = command[2];
+        let intensityFloat = create_float([intensityInt, intensityDecimal]);
+        if(intensityFloat != false)
+            return [direction, intensityFloat];
     }
-
-    //creates a message to the motor to return, taking in
-    //direction -> direction of motor 0/255
-    //intensityInt -> floored integer value of the speed
-    //intensityDecimal -> decimal value of the speed
+    
+    /**
+     * Creates a message for the motor to return
+     * @param {number} direction Represents the direction of the motor, out of 255
+     * @param {*} intensityInt The floored integer value of the speed
+     * @param {*} intensityDecimal The decimal value of the speed
+     * @returns {Uint8Array[number]} The motor message
+     */
     createSpeedMotorMessage(direction, intensityInt, intensityDecimal){
-	var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
-	return motorMessage;
+        var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
+        return motorMessage;
     }
 }
 
 // ----------------------Helper Functions----------------------
 
 // Used for sensors which describe a floating point number with two values
+/**
+ * Used to stitch together two numbers to create a float
+ * @param {*} command
+ * @returns {number} The complete floating point number
+ */
 function create_float(command) {
     if (command.length != 2) {
         console.log('Create Float function called on incorrect sensor.');
@@ -209,6 +328,15 @@ function create_float(command) {
 }
 
 // Mapping function that forces new number into final range
+/**
+ * DESCRIPTION HERE
+ * @param {*} num 
+ * @param {*} in_min 
+ * @param {*} in_max 
+ * @param {*} out_min 
+ * @param {*} out_max
+ * @returns {*}  
+ */
 function mapToRange(num, in_min, in_max, out_min, out_max) {
     let mappedVal = (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 

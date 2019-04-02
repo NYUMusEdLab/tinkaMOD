@@ -1,5 +1,7 @@
 // TODO - Add Print Mode
-
+/* 
+NO LONGER IN USE 
+*/ 
 class TinkaSensor {
     constructor() {
         this.id = 0;
