@@ -31,13 +31,11 @@ class TinkaCore {
 
         self.characteristics[0].startNotifications().then(function(characteristic) {
 
-            // Clean this up - should use the motor sensor class
+        // Does it make sense to instantiate a new motor instance here?
 	    let motor = new Motor();
 	    let motorMessage = motor.createSpeedMotorMessage(0,3,0);
             self.characteristics[1].writeValue(motorMessage);
         });
-
-        // If 'self' is not bound here. Then the event itself becomes 'self'
 
         return true;
     }
@@ -156,6 +154,8 @@ class TinkaCore {
             self.parse_packet(event);
             self.characteristics[0].removeEventListener('characteristicvaluechanged',
                         self.who_am_i_handler);
+
+            // If 'self' is not bound here. Then the event itself becomes 'self'
             self.characteristics[0].addEventListener('characteristicvaluechanged',
                         self.parse_packet.bind(self));
         }
