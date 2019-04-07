@@ -1,7 +1,38 @@
+
+/**  ***Class representing a Tinkacore. ***
+*Currently Supports: </br>
+*   Connection </br>
+*       ID: 0  </br>
+*       Output: [0|1] string containing name of sensor attached <br>
+*   Button
+*       ID: 1
+*       Output: [0|1]
+*   Knob
+*       ID: 2
+*       Output: float ranging from -10 to 10
+*   Slider
+*       ID: 3
+*       Output: float ranging from 0 to 10
+*   Joystick
+*       ID: 4
+*       Output: horizontal float, vertical float ranging from -10 to 10
+*   Distance
+*       ID: 23
+*       Output: float ranging from 0 to 20
+*   Color
+*       ID: 27
+*       Output: red int, green int, blue int ranging from 0 to 255
+*/
 class TinkaCore {
 
     // Coming from the Static variable, this might also have a number
     // for when it was added to the array
+
+    /**
+     * Creates an instance of the Tinkacore class
+     * @param {number} id
+     * @param {*} characteristics
+     */
     constructor(id, characteristics) {
         // Instance Variables
         this.characteristics = characteristics; // noble bluetooth component
@@ -18,7 +49,10 @@ class TinkaCore {
 
         TinkaCore.add_core(this.id);
     }
-
+    /**
+     * DESCRIPTION HERE
+     * @returns {boolean}
+     */
     connect() {
         let self = this;
 
@@ -39,13 +73,21 @@ class TinkaCore {
 
         return true;
     }
-
+    /**
+     * DESCRIPTION HERE
+     * @returns {boolean}
+     */
     disconnect() {
         this.connected = false;
         TinkaCore.remove_core(this.id);
         return false;
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} characteristics
+     * @returns {boolean}
+     */
     reconnect(characteristics) {
         let self = this;
 
@@ -57,6 +99,11 @@ class TinkaCore {
         return true;
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} sensor_id
+     * @returns {*}
+     */
     connect_sensor(sensor_id) {
         switch (sensor_id) {
         case 1:
@@ -71,9 +118,9 @@ class TinkaCore {
         case 4:
             this.sensor = new Joystick();
             break;
-	case 5:
-	    this.sensor = new Motor();
-	    break;
+        case 5:
+            this.sensor = new Motor();
+            break;
         case 23:
             this.sensor = new Distance();
             break;
@@ -89,7 +136,10 @@ class TinkaCore {
 
         return this.sensor;
     }
-
+    /**
+     * DESCRIPTION HERE
+     * @returns {boolean}
+     */
     disconnect_sensor() {
         this.sensor_connected = false;
         this.sensor = null;
@@ -98,6 +148,11 @@ class TinkaCore {
         return false;
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} event
+     * @returns {boolean}
+     */
     parse_packet(event) {
         let self = this;
         let packet = new Uint8Array(event.target.value.buffer);
@@ -129,7 +184,11 @@ class TinkaCore {
                 }
         }
     }
-
+    /**
+     * DESCRIPTION HERE
+     * @param {*} event
+     * @returns {boolean}
+     */
     who_am_i(event) {
         let self = this;
         let found = false;
@@ -165,6 +224,11 @@ class TinkaCore {
 
     // Static Methods for keeping track globally of
     // what cores we have connected
+    /**
+     * DESCRIPTION HERE
+     * @param {*} peripheral_id
+     * @returns {*}
+     */
     static add_core(peripheral_id) {
         // Check if TinkaCore is undefined
         if (TinkaCore.core_ids.disconnected.has(peripheral_id)) {
@@ -174,10 +238,30 @@ class TinkaCore {
         return peripheral_id;
     }
 
+    /**
+     * DESCRIPTION HERE
+     * @param {*} peripheral_id
+     * @returns {*}
+     */
     static remove_core(peripheral_id) {
         TinkaCore.core_ids.connected.delete(peripheral_id);
         TinkaCore.core_ids.disconnected.add(peripheral_id);
         return peripheral_id;
+    }
+
+
+    //handles all kinds of messages
+    //only motor message for now
+    /**
+     * DESCRIPTION HERE
+     * @param {*} direction
+     * @param {*} intensityInt
+     * @param {*} intensityDecimal
+     * @returns {*}
+     */
+    static createMessage(direction, intensityInt, intensityDecimal){
+        var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
+        return motorMessage;
     }
 
 }
