@@ -2,7 +2,7 @@ let tinkaServiceName = 0xfffa;
 var slider = document.getElementById('slider');
 
 // Place to hold tinkacores and information about them
-let tinkacores = {}; // Dict containing all tinkacores
+tinkacores = {}; // Dict containing all tinkacores
 TinkaCore.core_ids = TinkaCore.core_ids || {
     connected: new Set([]),
     disconnected: new Set([])

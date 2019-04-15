@@ -40,6 +40,7 @@ class TinkaCore {
         this.connected = true;
         this.sensor_connected = false;
         this.sensor = null;
+        this.reading = {};
 
         // Static Variable
         TinkaCore.core_ids = TinkaCore.core_ids || {
@@ -180,6 +181,7 @@ class TinkaCore {
 
                 else {
                     let reading = this.sensor.sense(command_id, command);
+                    this.reading[this.sensor.name] = reading;
                     console.log(this.sensor.name + ': ', reading);
                 }
         }

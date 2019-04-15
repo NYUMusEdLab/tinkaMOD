@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <style type="text/css" media="screen">
+    #editor {
+        position: relative;
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 200px;
+        width: 80%;
+    }
+    #output {
+        position: relative;
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 200px;
+        width: 80%;
+    }
+  </style>
+  <head>
+    <title>Bluetooth</title>
+  </head>
+    <body style="margin:2em">
+      <h1> Editor </h1>
+      <button onclick="connect()" class="connect-button">Connect</button>
+
+      <div id="editor"></div>
+      <button onclick="getCode()" class="run-button">Run</button>
+      <button onclick="stopCode()" class="stop-button">Stop</button>
+      <div id="frame"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.js"></script>
+    <script src="https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="../tinkatop.js"></script>
+    <script src="../tinkacore.js"></script>
+    <script src="../index.js"></script>
+    <script src="editor.js"></script>
+  </body>
+</html>
