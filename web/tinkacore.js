@@ -40,7 +40,7 @@ class TinkaCore {
         this.connected = true;
         this.sensor_connected = false;
         this.sensor = null;
-        this.reading = {};
+        this.reading = {'button': 0};
 
         // Static Variable
         TinkaCore.core_ids = TinkaCore.core_ids || {
@@ -186,6 +186,11 @@ class TinkaCore {
                 }
         }
     }
+
+    get(sensor_name) {
+        return this.reading[sensor_name];
+    }
+
     /**
      * DESCRIPTION HERE
      * @param {*} event
