@@ -51,7 +51,7 @@ function add_tinkacore(id, characteristics) {
     else {
         let newTinkaCore = new TinkaCore(id, characteristics);
         newTinkaCore.connect();
-        tinkacores[id] = new TinkaCore(id, characteristics);
+        tinkacores[id] = newTinkaCore;
     }
 
     console.log(tinkacores);

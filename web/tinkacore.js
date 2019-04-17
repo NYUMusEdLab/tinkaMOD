@@ -40,7 +40,7 @@ class TinkaCore {
         this.connected = true;
         this.sensor_connected = false;
         this.sensor = null;
-        this.reading = {'button': 0};
+        this.reading = {};
 
         // Static Variable
         TinkaCore.core_ids = TinkaCore.core_ids || {
