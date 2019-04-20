@@ -1,71 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Bluetooth</title>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <title>Tinkamo Documentation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="container">
+            <h1>tinkaMOD</h1>
+            <h5>Use <a href= "https://tinkamo.com" target="_blank">Tinkamo</a> bluetooth devices in the web.</h5>
+            <div class="section">
+                <a class="waves-effect waves-light btn-large red darken-1" id="connectionButton" onclick="onConnectionCallback()"><i class="material-icons left">bluetooth</i>Connect your Tinkamo!</a>
+            </div>
+            <div class="section">
+                <p>Javascript</p>
+                <pre><code class="javascript">let tinkamo = new Tinkamo();</code></pre>
+                <p>HTML</p>
+                <pre><code class="html">&lt;button onclick="tinkamo.connect()"&gt; Connect&lt;/button&gt;</code></pre>
+            </div>
+            <div class="divider"></div>
+            <div class="section row">
+                <div class="col s6">
+                    <h5>View all Tinkamo connected.</h5>
+                    <pre><code class="javascript">tinkamo.getTinkamoList();</code></pre>
+                </div>
+                <div class="col s6">
+                    <h5> </h5>
+                    <p id='example1'>test</p>
+                </div>
+            </div>
+        </div>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-
-    <style>
-      .slidecontainer {
-      width: 100%;
-      }
-
-      .slider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 25px;
-      background: #d3d3d3;
-      outline: none;
-      opacity: 0.7;
-      -webkit-transition: .2s;
-      transition: opacity .2s;
-      }
-
-      .slider:hover {
-      opacity: 1;
-      }
-
-      .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 25px;
-      height: 25px;
-      background: #4CAF50;
-      cursor: pointer;
-      }
-
-      .slider::-moz-range-thumb {
-      width: 25px;
-      height: 25px;
-      background: #4CAF50;
-      cursor: pointer;
-      }
-    </style>
-
-  </head>
-    <body style="margin:2em">
-      <h1> Bluetooth </h1>
-      <button onclick="connect()" class="connect-button mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-	Connect
-      </button>
-
-      <div class="slidecontainer">
-
-	<br>
-	<p> Adjust the speed. </p>
-	<br>
-	<input type="range" min="-1000" max="1000" value="0" class="slider" id="slider">
-      </div>
-      <button onclick="stop_motor()" class="stop mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="stop">
-	Stop
-      </button>
-
-    <script src="tinkatop.js"></script>
-    <script src="tinkacore.js"></script>
-    <script src="index.js"></script>
-  </body>
+        <script src="tinkatop.js"></script>
+        <script src="tinkacore.js"></script>
+        <script src="tinkamo.js"></script>
+        <script src="index.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+    </body>
 </html>

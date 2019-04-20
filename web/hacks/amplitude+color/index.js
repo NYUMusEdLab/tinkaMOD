@@ -4,7 +4,13 @@
 // in web: python -m SimpleHttpServer
 // http://127.0.0.1:8000/hacks/amplitude+color/
 
-// Bug - the tinkamo has to be disconnected for sensor values to appear
+let tinkamo = new Tinkamo();
+
+let tinkaAddButton = document.createElement("input");
+tinkaAddButton.type = "button";
+tinkaAddButton.value = "Connect";
+tinkaAddButton.onclick = function() { tinkamo.connect() };
+document.body.appendChild(tinkaAddButton);
 
 let mic;
 let colorArray = {r:255, g:255, b:255};

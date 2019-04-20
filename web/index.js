@@ -1,93 +1,59 @@
-let tinkaServiceName = 0xfffa;
-var slider = document.getElementById('slider');
+// Tinkamo - Interactive getting started guide
+// Willie Payne
+// 2019
 
-// Place to hold tinkacores and information about them
-tinkacores = {}; // Dict containing all tinkacores
-TinkaCore.core_ids = TinkaCore.core_ids || {
-    connected: new Set([]),
-    disconnected: new Set([])
+// Variables to use in demo code
+let tinkamo = new Tinkamo();
+let tinka0;
+
+// HTML Elements to interact with
+let connectionButton = document.getElementById('connectionButton');
+
+let onConnectionCallback = function() {
+    tinkamo.connect(function() {
+        connectionButton.className = "waves-effect waves-light btn-large blue darken-1"
+        connectionButton.innerHTML = "<i class='material-icons left'>bluetooth_connected</i>Connect another one!"
+    }, connectionButton);
+
 }
 
-function connect(){
-    console.log('Requesting Bluetooth Device...');
-    let newDeviceID; // Hold on to the device ID for later
-    navigator.bluetooth.requestDevice({
-	filters : [{
-	    name: 'Tinka',
-	}],
-	optionalServices: [tinkaServiceName]
-    })
-	.then(device => {
-	    console.log('> Found ' + device.name);
-	    console.log('> Id: ' + device.id);
-	    console.log('> Connected: ' + device.gatt.connected);
-	    device.addEventListener('gattserverdisconnected', onDisconnected);
+/*let tinkaAddButton = document.createElement("input");
+tinkaAddButton.type = "button";
+tinkaAddButton.value = "Connect";
+tinkaAddButton.onclick = function() { tinkamo.connect() };
+document.body.appendChild(tinkaAddButton);
 
-        newDeviceID = device.id;
-        return device.gatt.connect()
-	})
-	.then(server => {
-            console.log(server);
-	    return server.getPrimaryService(tinkaServiceName);
-	})
-	.then(service => {
-            console.log('Tinka services...');
-            console.log(service);
-            return service.getCharacteristics();
-	})
-	.then(characteristics => {
-	    console.log('Tinka characteristics...');
-        add_tinkacore(newDeviceID, characteristics);
-	})
-	.catch(error => {
-	    console.log("ERROR: " + error);
-	});
-}
+let printAllTinka = document.createElement("input");
+printAllTinka.type = "button";
+printAllTinka.value = "Print All";
+printAllTinka.onclick = function() { console.log(tinkamo.getTinkamoList()) };
+document.body.appendChild(printAllTinka);
 
-function add_tinkacore(id, characteristics) {
-    if (TinkaCore.core_ids.disconnected.has(id)) {
-        tinkacores[id].reconnect(characteristics);
+let getTinkaWithName = document.createElement("input");
+let tinka0;
+getTinkaWithName.type = "button";
+getTinkaWithName.value = "Get tinka0";
+getTinkaWithName.onclick = function() {
+    let tinkas0 = tinkamo.getByName('tinka0');
+    if (tinkas0) {
+        tinka0 = tinkas0[0];
+
+        // really these should take the event as the first argument to be passed in
+        tinka0.onSensorChange(function(event) {
+            if (event.connected) {
+                console.log('Sensor has changed to:', event.sensor);
+            }
+            else {
+                console.log('No more sensor');
+            }
+        });
+        tinka0.onAnyReading(function(reading) {
+            console.log('Callback', reading.sensor, reading.value);
+        });
+        tinka0.onReading('button', function(value) {
+            if (value) { console.log('button was pressed down'); }
+            else { console.log('button was let up'); }
+        })
     }
-    else {
-        let newTinkaCore = new TinkaCore(id, characteristics);
-        newTinkaCore.connect();
-        tinkacores[id] = newTinkaCore;
-    }
-
-    console.log(tinkacores);
-    console.log(TinkaCore.core_ids);
-    return tinkacores;
-}
-
-function onDisconnected(event) {
-    let device = event.target;
-    let disconnected_id = device.id;
-
-    tinkacores[disconnected_id].disconnect();
-    console.log(TinkaCore.core_ids);
-    console.log('Device ' + device.name + ' is disconnected.');
-}
-
-
-// Old Motor Code
-//0-4
-//0-255
-
-/*
-function stop_motor(event) {
-    slider.value = 0
-    //doesn't work yet
-}
-*/
-
-/*slider.oninput = function() {
-var speed = parseInt(this.value, 10)
-if( speed < 0 ){
-    d = 0;
-    speed *= -1;
-}
-else{ d = 255; }
-var x = Math.floor(speed/255) //+1 <- never goes to 0
-var y = speed % 255
-var motor = new Uint8Array([90,171,10,0,0,2,5,0,0,d,x,y])
-characteristics[1].writeValue(motor);*/
+};
+document.body.appendChild(getTinkaWithName);*/

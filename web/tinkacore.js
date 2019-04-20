@@ -1,8 +1,8 @@
 
 /**  ***Class representing a Tinkacore. ***
-*Currently Supports: </br>
-*   Connection </br>
-*       ID: 0  </br>
+*Currently Supports:
+*   Connection
+*       ID: 0
 *       Output: [0|1] string containing name of sensor attached <br>
 *   Button
 *       ID: 1
@@ -34,19 +34,37 @@ class TinkaCore {
      * @param {*} characteristics
      */
     constructor(id, characteristics) {
-        // Instance Variables
-        this.characteristics = characteristics; // noble bluetooth component
-        this.id = id;
-        this.connected = true;
-        this.sensor_connected = false;
-        this.sensor = null;
-        this.reading = {};
 
-        // Static Variable
+        // Static Variables
         TinkaCore.core_ids = TinkaCore.core_ids || {
             connected: new Set([]),
             disconnected: new Set([])
         }
+        TinkaCore.number_added = TinkaCore.number_added || 0;
+
+        // Instance Variables
+        // Bluetooth
+        this.characteristics = characteristics;
+
+        // Core
+        this.id = id;
+        this.name = 'tinka' + TinkaCore.number_added;
+        this.connected = true;
+        this.sensorChangeFunction = {func:null, args: null};
+
+        // Sensor
+        this.sensor_connected = false;
+        this.sensor = null;
+        this.reading = {};
+        this.anyReadingFunction = {func:null, args: null};
+        this.readingFunction = {
+            'button': {func:null, args: null},
+            'knob': {func:null, args: null},
+            'slider': {func:null, args: null},
+            'joystick': {func:null, args: null},
+            'distance': {func:null, args: null},
+            'color': {func:null, args: null}
+        };
 
         TinkaCore.add_core(this.id);
     }
@@ -57,10 +75,7 @@ class TinkaCore {
     connect() {
         let self = this;
 
-        // https://stackoverflow.com/questions/33859113/
-        // javascript-removeeventlistener-not-working-inside-a-class
         self.who_am_i_handler = self.who_am_i.bind(self);
-
         self.characteristics[0].addEventListener('characteristicvaluechanged',
                                                  self.who_am_i_handler);
 
@@ -95,6 +110,7 @@ class TinkaCore {
         console.log('Reconnecting');
         self.characteristics = characteristics;
         TinkaCore.add_core(this.id);
+        this.connected = true;
 
         self.connect();
         return true;
@@ -174,6 +190,12 @@ class TinkaCore {
                 let new_sensor_id = command[0];
                 if (new_sensor_id == 255) { this.disconnect_sensor(); }
                 else { self.connect_sensor(new_sensor_id); }
+
+                // Call User-created event listener
+                if (this.sensorChangeFunction.func) {
+                    this.sensorChangeFunction.func({sensor:this.getSensorName(), connected:this.sensor_connected}, ...this.sensorChangeFunction.args);
+                }
+
                 break;
             default:
                 if (!this.sensor_connected) { this.connect_sensor(sensor_id); }
@@ -182,17 +204,85 @@ class TinkaCore {
                 else {
                     let reading = this.sensor.sense(command_id, command);
                     this.reading[this.sensor.name] = reading;
-                    console.log(this.sensor.name + ': ', reading);
+                    console.log(this.name + ': ' + this.getSensorName() + ': ', reading);
+
+                    // Call User-created event listeners
+                    if (this.anyReadingFunction.func) {
+                        this.anyReadingFunction.func({sensor:this.getSensorName(), value:reading}, ...this.anyReadingFunction.args);
+                    }
+                    if (this.readingFunction[this.getSensorName()].func) {
+                        this.readingFunction[this.getSensorName()].func(reading, ...this.readingFunction[this.getSensorName()].args);
+                    }
                 }
         }
     }
 
-    get(sensor_name) {
-        return this.reading[sensor_name];
+    getLastReading(sensor_name) {
+        if (this.reading[sensor_name]) {
+            return this.reading[sensor_name]
+        }
+        else { return false; }
+    }
+
+    getSensorName() {
+        if (this.sensor_connected) {
+            return this.sensor.name;
+        }
+        else {
+            return 'none';
+        }
+    }
+
+
+    // Support for Event listeners (at some point this could be refactored)
+    onSensorChange(func, ...args) {
+        if (typeof func === "function") {
+            this.sensorChangeFunction.func = func.bind(this);
+            this.sensorChangeFunction.args = args;
+            return true;
+        }
+        else {
+            throw "First argument for onSensorChange() must be a function.";
+            return false;
+        }
+    }
+
+    onAnyReading(func, ...args) {
+        if (typeof func === "function") {
+            this.anyReadingFunction.func = func.bind(this);
+            this.anyReadingFunction.args = args;
+            return true;
+        }
+        else {
+            throw "First argument for onAnyReading() must be a function.";
+            return false;
+        }
+    }
+
+    onReading(sensorName, func, ...args) {
+        if (typeof func === "function") {
+            try {
+                console.log(this.readingFunction);
+                this.readingFunction[sensorName].func = func.bind(this);
+                this.readingFunction[sensorName].args = args;
+                return true
+
+            } catch (e) {
+                throw e;
+                throw "Incorrect sensor name provided. Must be 'button', 'knob', 'slider', 'joystick', 'distance', or 'color'";
+                return false;
+            }
+        }
+        else {
+            throw "First argument for onReading() must be a function.";
+            return false;
+        }
     }
 
     /**
-     * DESCRIPTION HERE
+     * Function that gets called right when a Tinkacore is first connected and
+     * begins subscribing to messages. Determines if it is a motor and what
+     * sensor if any is currently connected.
      * @param {*} event
      * @returns {boolean}
      */
@@ -240,6 +330,9 @@ class TinkaCore {
         // Check if TinkaCore is undefined
         if (TinkaCore.core_ids.disconnected.has(peripheral_id)) {
             TinkaCore.core_ids.disconnected.delete(peripheral_id);
+        }
+        else {
+            TinkaCore.number_added += 1;
         }
         TinkaCore.core_ids.connected.add(peripheral_id);
         return peripheral_id;
