@@ -49,10 +49,10 @@ class Tinkamo {
     	    console.log('Tinka characteristics...');
             return self._add_tinkacore(newDeviceID, characteristics);
     	})
-        .then(tinkacores => {
+        .then(tinkacore => {
             if (optionalCallback) {
                 if (typeof optionalCallback === "function") {
-                    optionalCallback(...args);
+                    optionalCallback(tinkacore, ...args);
                 }
             }
             console.log('Optional user callback')
@@ -123,7 +123,7 @@ class Tinkamo {
             this.tinkacores[id] = newTinkaCore;
         }
 
-        return this.tinkacores;
+        return this.tinkacores[id];
     }
 
     // Should only be used as a callback function

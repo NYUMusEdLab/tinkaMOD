@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.min.js"></script>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <title>Tinkamo Documentation</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,18 +21,123 @@
                 <p>Javascript</p>
                 <pre><code class="javascript">let tinkamo = new Tinkamo();</code></pre>
                 <p>HTML</p>
-                <pre><code class="html">&lt;button onclick="tinkamo.connect()"&gt; Connect&lt;/button&gt;</code></pre>
+                <pre><code class="html">&lt;button onclick="tinkamo.connect()"&gt;Connect&lt;/button&gt;</code></pre>
+            </div>
+            <div class="divider"></div>
+            <h3>Getting Started</h3>
+            <div class="section row">
+                <div class="col s6">
+                    <h5>View all Tinkamo that have been connected.</h5>
+                    <pre><code class="javascript">tinkamo.getTinkamoList();</code></pre>
+                    <a class="waves-effect waves-light btn-small right purple darken-3" onclick="e1()">Run<i class="material-icons right">chevron_right</i></a>
+                </div>
+                <div class="col s6">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Connected</th>
+                                <th>Sensor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="example1"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="section row">
+                <div class="col s6">
+                    <h5>Search for Tinkamo with a specific name.</h5>
+                    <pre><code class="javascript">tinkamo.getByName('tinka0');</code></pre>
+                    <a class="waves-effect waves-light btn-small right purple darken-3" onclick="e2()">Run<i class="material-icons right">chevron_right</i></a>
+                </div>
+                <div class="col s6">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Connected</th>
+                                <th>Sensor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="example2"></tbody>
+                    </table>
+                </div>
             </div>
             <div class="divider"></div>
             <div class="section row">
-                <div class="col s6">
-                    <h5>View all Tinkamo connected.</h5>
-                    <pre><code class="javascript">tinkamo.getTinkamoList();</code></pre>
+                <h3>Events</h3>
+                <div class="col s7">
+                    <h5>Listen for when a sensor is connected or disconnected.</h5>
+                    <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
+tinka0.onSensorChange(function(event) {
+    console.log(event.connected, event.sensor);
+});</code></pre>
                 </div>
-                <div class="col s6">
-                    <h5> </h5>
-                    <p id='example1'>test</p>
+                <div class="col s5">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Connected</th>
+                                <th>Sensor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="example3"></tbody>
+                    </table>
                 </div>
+            </div>
+            <div class="section row">
+                <div class="col s7">
+                    <h5>Listen to all sensor readings.</h5>
+                    <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
+tinka0.onAnyReading(function(event) {
+    console.log(event.sensor, event.value);
+});</code></pre>
+                </div>
+                <div class="col s5">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sensor</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="example4"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="section row">
+                <div class="col s7">
+                    <h5>Or, specify a sensor.</h5>
+                    <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
+tinka0.onReading('button', function(value) {
+    if (value) { console.log('button was pressed down'); }
+    else { console.log('button was let up'); }
+});</code></pre>
+                </div>
+                <div class="col s5">
+                    <p id='example5'></p>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="section">
+                <h3>Have Fun!</h3>
+                <h5>Turn up the volume and make some sounds with the button and <a href="https://tonejs.github.io" target="_blank">Tone.js.</a></h5>
+                <form action="#">
+                    <p class="range-field">
+                        <input type="range" id="volume_slider" min="-20" max="0" value="-100" />
+                    </p>
+                </form>
+                <pre><code class="javascript">let synth = new Tone.Synth().toMaster();
+let pitches = ['F3', 'A3', 'A#3', 'C4', 'E4', 'F4', 'A4', 'A#4', 'C5', 'E5', 'F5'];
+
+let tinka0 = tinkamo.getByName('tinka0')[0];
+tinka0.onReading('button', function(value) {
+    if (value) {
+        let randomPitch = pitches[randomGenerator.value];
+        synth.triggerAttack(randomPitch);
+    }
+    else { synth.triggerRelease(); }
+});</code></pre>
             </div>
         </div>
 
