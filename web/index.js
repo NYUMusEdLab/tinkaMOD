@@ -18,6 +18,7 @@ let volumeSlider = document.getElementById('volume_slider');
 
 // Variables for Tone example
 let sound = false;
+Tone.context.latencyHint = 'fastest';
 let outputVol = new Tone.Volume(-100);
 outputVol.mute = true;
 let synth = new Tone.Synth().chain(outputVol, Tone.Master);

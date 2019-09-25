@@ -10,6 +10,8 @@
 
 // Issues
 // The potentiometers send a short unknown message sometimes, length 7
+// ISFP
+// INTJ
 
 const noble = require('noble');
 const osc = require('osc');
