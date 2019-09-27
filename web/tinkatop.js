@@ -12,8 +12,8 @@ class TinkaTop {
     }
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {number} Always returns 0
      */
     sense(command_id, command) {
@@ -21,10 +21,10 @@ class TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE 
-     * @param {*} command_id 
-     * @param {*} command 
-     * @returns {*} 
+     * DESCRIPTION HERE
+     * @param {*} command_id
+     * @param {*} command
+     * @returns {*}
      */
     get_osc_args(command_id, command) {
         let reading = this.sense(command_id, command);
@@ -76,8 +76,8 @@ class Button extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -104,8 +104,8 @@ class Knob extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -136,8 +136,8 @@ class Slider extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -166,8 +166,8 @@ class Joystick extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -204,8 +204,8 @@ class Distance extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -241,8 +241,8 @@ class Color extends TinkaTop {
 
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command) {
@@ -277,11 +277,11 @@ class Motor extends TinkaTop {
 
         console.log("THIS WORKS");
     }
-       
+
     /**
      * DESCRIPTION HERE
-     * @param {*} command_id 
-     * @param {*} command 
+     * @param {*} command_id
+     * @param {*} command
      * @returns {*}
      */
     sense(command_id, command){
@@ -292,7 +292,7 @@ class Motor extends TinkaTop {
         if(intensityFloat != false)
             return [direction, intensityFloat];
     }
-    
+
     /**
      * Creates a message for the motor to return
      * @param {number} direction Represents the direction of the motor, out of 255
@@ -330,12 +330,12 @@ function create_float(command) {
 // Mapping function that forces new number into final range
 /**
  * DESCRIPTION HERE
- * @param {*} num 
- * @param {*} in_min 
- * @param {*} in_max 
- * @param {*} out_min 
+ * @param {*} num
+ * @param {*} in_min
+ * @param {*} in_max
+ * @param {*} out_min
  * @param {*} out_max
- * @returns {*}  
+ * @returns {*}
  */
 function mapToRange(num, in_min, in_max, out_min, out_max) {
     let mappedVal = (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -345,4 +345,4 @@ function mapToRange(num, in_min, in_max, out_min, out_max) {
     return mappedVal;
 }
 
-
+export { TinkaTop, Button, Knob, Slider, Joystick, Distance, Color, Motor };

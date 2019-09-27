@@ -1,0 +1,20 @@
+{
+  "name": "@musedlab/tinkamod",
+  "version": "0.0.2",
+  "description": "Connect Tinkamo devices in the browser",
+  "main": {"web/tinkamo.js"},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NYUMusEdLab/tinkaMOD.git"
+  },
+  "author": "MusEDLab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NYUMusEdLab/tinkaMOD/issues"
+  },
+  "homepage": "https://github.com/NYUMusEdLab/tinkaMOD#readme",
+  "files": ["web/tinkacore.js", "web/tinkatop.js", "web/tinkamo.js"]
+}

@@ -1,4 +1,5 @@
 // TODO - Support on disconnect callback...
+import { TinkaCore } from 'tinkacore.js';
 
 class Tinkamo {
     constructor() {

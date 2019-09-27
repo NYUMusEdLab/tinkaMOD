@@ -23,6 +23,9 @@
 *       ID: 27
 *       Output: red int, green int, blue int ranging from 0 to 255
 */
+
+import {TinkaTop, Button, Knob, Slider, Joystick, Distance, Color, Motor} from 'tinkatop.js';
+
 class TinkaCore {
 
     // Coming from the Static variable, this might also have a number
@@ -363,5 +366,6 @@ class TinkaCore {
         var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
         return motorMessage;
     }
-
 }
+
+export { TinkaCore };
