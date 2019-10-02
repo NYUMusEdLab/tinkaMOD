@@ -2,6 +2,8 @@
 // Willie Payne
 // 2019
 
+import Tinkamo from "./tinkamo.js";
+
 // Variables to use in demo code
 let tinkamo = new Tinkamo();
 let tinka0;
@@ -42,7 +44,7 @@ volumeSlider.oninput = function() {
 }
 
 // Callback functions
-let onConnectionCallback = function() {
+window.onConnectionCallback = function() {
     if (Tone.context.state !== 'running') {
         Tone.context.resume();
     }
@@ -60,7 +62,7 @@ let onConnectionCallback = function() {
 
 }
 
-let e1 = function() {
+window.e1 = function() {
     let tinkaList = tinkamo.getTinkamoList();
     if (!tinkaList.length) {
         alert(alertText);
@@ -68,7 +70,7 @@ let e1 = function() {
     }
 
     example1.innerHTML = '';
-    for (i in tinkaList) {
+    for (let i in tinkaList) {
         let row = example1.insertRow(i);
 
         let cell0 = row.insertCell(0);
@@ -82,7 +84,7 @@ let e1 = function() {
     return true;
 }
 
-let e2 = function() {
+window.e2 = function() {
     let tinkaList = tinkamo.getByName('tinka0');
     if (!tinkaList.length) {
         alert(alertText);
@@ -90,7 +92,7 @@ let e2 = function() {
     }
 
     example2.innerHTML = '';
-    for (i in tinkaList) {
+    for (let i in tinkaList) {
         let row = example2.insertRow(i);
 
         let cell0 = row.insertCell(0);
@@ -104,7 +106,7 @@ let e2 = function() {
     return true;
 }
 
-let e3 = function() {
+window.e3 = function() {
     tinka0.onSensorChange(function(event) {
         example3.innerHTML = '';
         let row = example3.insertRow(0);
@@ -117,7 +119,7 @@ let e3 = function() {
     });
 }
 
-let e4 = function() {
+window.e4 = function() {
     tinka0.onAnyReading(function(event) {
         example4.innerHTML = '';
         let row = example4.insertRow(0);
@@ -130,7 +132,7 @@ let e4 = function() {
     });
 }
 
-let e5 = function() {
+window.e5 = function() {
     tinka0.onReading('button', function(value) {
         if (value) {
             let randomPitch = pitches[randomGenerator.value];
