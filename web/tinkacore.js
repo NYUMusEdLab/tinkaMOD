@@ -24,7 +24,7 @@
 *       Output: red int, green int, blue int ranging from 0 to 255
 */
 
-import {TinkaTop, Button, Knob, Slider, Joystick, Distance, Color, Motor} from 'tinkatop.js';
+import {TinkaTop, Button, Knob, Slider, Joystick, Distance, Color, Motor} from './tinkatop.js';
 
 class TinkaCore {
 

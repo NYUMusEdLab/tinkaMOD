@@ -1,7 +1,7 @@
 // TODO - Support on disconnect callback...
-import { TinkaCore } from 'tinkacore.js';
+import { TinkaCore } from './tinkacore.js';
 
-class Tinkamo {
+export default class Tinkamo {
     constructor() {
         this.tinkacores = {};
         this.serviceName = 0xfffa;
