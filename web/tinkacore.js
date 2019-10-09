@@ -45,6 +45,10 @@ class TinkaCore {
         }
         TinkaCore.number_added = TinkaCore.number_added || 0;
 
+        TinkaCore.eventTypes = ['*', 'sensor change', 'reading', 'button',
+                                'knob', 'slider', 'joystick', 'distance',
+                                'color'];
+
         // Instance Variables
         // Bluetooth
         this.characteristics = characteristics;
@@ -68,6 +72,9 @@ class TinkaCore {
             'distance': {func:null, args: null},
             'color': {func:null, args: null}
         };
+
+        // Event Listeners
+        this.events = []; // [ {'eventType': eventType, 'func': func, 'args': args} ]
 
         TinkaCore.add_core(this.id);
     }
@@ -194,7 +201,12 @@ class TinkaCore {
                 if (new_sensor_id == 255) { this.disconnect_sensor(); }
                 else { self.connect_sensor(new_sensor_id); }
 
-                // Call User-created event listener
+                // new - Iterate through event list
+                this._callEventListeners({type: 'sensor change',
+                                         sensor:this.getSensorName(),
+                                         value:this.sensor_connected});
+
+                // Old - Call User-created event listener
                 if (this.sensorChangeFunction.func) {
                     this.sensorChangeFunction.func({sensor:this.getSensorName(), connected:this.sensor_connected}, ...this.sensorChangeFunction.args);
                 }
@@ -209,7 +221,12 @@ class TinkaCore {
                     this.reading[this.sensor.name] = reading;
                     console.log(this.name + ': ' + this.getSensorName() + ': ', reading);
 
-                    // Call User-created event listeners
+                    // new - Iterate through event list
+                    this._callEventListeners({type: 'reading',
+                                             sensor: this.getSensorName(),
+                                             value: reading});
+
+                    // Old - Call User-created event listeners
                     if (this.anyReadingFunction.func) {
                         this.anyReadingFunction.func({sensor:this.getSensorName(), value:reading}, ...this.anyReadingFunction.args);
                     }
@@ -236,6 +253,43 @@ class TinkaCore {
         }
     }
 
+    // If I do func.bind(this) - will I be able to remove the function?
+    addEventListener(eventType, func, ...args) {
+        if (typeof func !== "function") {
+            throw "second argument must be a valid function";
+            return false;
+        }
+        if (!TinkaCore.eventTypes.includes(eventType)) {
+            throw "event type must be valid"; // list event types
+            return false;
+        }
+
+        let newEvent = {'eventType': eventType, 'func': func, 'args': args};
+        this.events.push(newEvent);
+        return true;
+    }
+
+    removeEventListener(eventType, func) {
+        this.events = this.events.filter(ev => (ev.eventType != eventType || ev.func != func));
+        return true;
+    }
+
+    // removeAllEventListeners function?
+    // We could have a special object flag that prevents removal for some?
+
+    // eventType is the name of the event
+    // event args is an object containing relevent info about the event
+    _callEventListeners(event) {
+        for (let evObj of this.events) {
+            if (
+                evObj.eventType == '*' ||
+                (event.type == 'reading' && evObj.eventType != 'sensor change') ||
+                evObj.eventType == event.type
+            ) {
+                evObj.func(event, ...evObj.args);
+            }
+        }
+    }
 
     // Support for Event listeners (at some point this could be refactored)
     onSensorChange(func, ...args) {

@@ -107,7 +107,17 @@ window.e2 = function() {
 }
 
 window.e3 = function() {
-    tinka0.onSensorChange(function(event) {
+    tinka0.addEventListener('sensor change', function(event) {
+        example3.innerHTML = '';
+        let row = example3.insertRow(0);
+
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+
+        cell0.innerHTML = event.value;
+        cell1.innerHTML = event.sensor;
+    });
+    /*tinka0.onSensorChange(function(event) {
         example3.innerHTML = '';
         let row = example3.insertRow(0);
 
@@ -116,11 +126,11 @@ window.e3 = function() {
 
         cell0.innerHTML = event.connected;
         cell1.innerHTML = event.sensor;
-    });
+    });*/
 }
 
 window.e4 = function() {
-    tinka0.onAnyReading(function(event) {
+    tinka0.addEventListener('reading', function(event) {
         example4.innerHTML = '';
         let row = example4.insertRow(0);
 
@@ -130,11 +140,21 @@ window.e4 = function() {
         cell0.innerHTML = event.sensor;
         cell1.innerHTML = event.value;
     });
+    /*tinka0.onAnyReading(function(event) {
+        example4.innerHTML = '';
+        let row = example4.insertRow(0);
+
+        let cell0 = row.insertCell(0);
+        let cell1 = row.insertCell(1);
+
+        cell0.innerHTML = event.sensor;
+        cell1.innerHTML = event.value;
+    });*/
 }
 
 window.e5 = function() {
-    tinka0.onReading('button', function(value) {
-        if (value) {
+    tinka0.addEventListener('button', function(event) {
+        if (event.value) {
             let randomPitch = pitches[randomGenerator.value];
             synth.triggerAttack(randomPitch);
             example5.innerHTML = 'button was pressed down';
@@ -144,4 +164,16 @@ window.e5 = function() {
             example5.innerHTML = 'button was let up';
         }
     });
+
+    /*tinka0.onReading('button', function(value) {
+        if (value) {
+            let randomPitch = pitches[randomGenerator.value];
+            synth.triggerAttack(randomPitch);
+            example5.innerHTML = 'button was pressed down';
+        }
+        else {
+            synth.triggerRelease();
+            example5.innerHTML = 'button was let up';
+        }
+    });*/
 }
