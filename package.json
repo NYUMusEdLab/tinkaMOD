@@ -1,6 +1,6 @@
 {
   "name": "@musedlab/tinkamod",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Connect Tinkamo devices in the browser",
   "main": "web/tinkamo.js",
   "scripts": {

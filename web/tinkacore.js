@@ -262,8 +262,9 @@ class TinkaCore {
         for (let evObj of this.events) {
             if (
                 evObj.eventType == '*' ||
-                (event.type == 'reading' && evObj.eventType != 'sensor change') ||
-                evObj.eventType == event.type
+                (evObj.eventType == 'reading' && event.type == 'reading') ||
+                (evObj.eventType == event.sensor) ||
+                (evObj.eventType == 'sensor change' && event.type == 'sensor change')
             ) {
                 evObj.func(event, ...evObj.args);
             }
