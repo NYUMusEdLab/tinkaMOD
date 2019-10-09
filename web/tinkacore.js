@@ -57,21 +57,11 @@ class TinkaCore {
         this.id = id;
         this.name = 'tinka' + TinkaCore.number_added;
         this.connected = true;
-        this.sensorChangeFunction = {func:null, args: null};
 
         // Sensor
         this.sensor_connected = false;
         this.sensor = null;
         this.reading = {};
-        this.anyReadingFunction = {func:null, args: null};
-        this.readingFunction = {
-            'button': {func:null, args: null},
-            'knob': {func:null, args: null},
-            'slider': {func:null, args: null},
-            'joystick': {func:null, args: null},
-            'distance': {func:null, args: null},
-            'color': {func:null, args: null}
-        };
 
         // Event Listeners
         this.events = []; // [ {'eventType': eventType, 'func': func, 'args': args} ]
@@ -202,15 +192,11 @@ class TinkaCore {
                 else { self.connect_sensor(new_sensor_id); }
 
                 // new - Iterate through event list
+                // useful to also get the entire tinkacore??
                 this._callEventListeners({type: 'sensor change',
-                                         sensor:this.getSensorName(),
-                                         value:this.sensor_connected});
-
-                // Old - Call User-created event listener
-                if (this.sensorChangeFunction.func) {
-                    this.sensorChangeFunction.func({sensor:this.getSensorName(), connected:this.sensor_connected}, ...this.sensorChangeFunction.args);
-                }
-
+                                         sensor: this.getSensorName(),
+                                         value: this.sensor_connected,
+                                         tinkacore: this});
                 break;
             default:
                 if (!this.sensor_connected) { this.connect_sensor(sensor_id); }
@@ -224,15 +210,8 @@ class TinkaCore {
                     // new - Iterate through event list
                     this._callEventListeners({type: 'reading',
                                              sensor: this.getSensorName(),
-                                             value: reading});
-
-                    // Old - Call User-created event listeners
-                    if (this.anyReadingFunction.func) {
-                        this.anyReadingFunction.func({sensor:this.getSensorName(), value:reading}, ...this.anyReadingFunction.args);
-                    }
-                    if (this.readingFunction[this.getSensorName()].func) {
-                        this.readingFunction[this.getSensorName()].func(reading, ...this.readingFunction[this.getSensorName()].args);
-                    }
+                                             value: reading,
+                                             tinkacore: this});
                 }
         }
     }
@@ -288,51 +267,6 @@ class TinkaCore {
             ) {
                 evObj.func(event, ...evObj.args);
             }
-        }
-    }
-
-    // Support for Event listeners (at some point this could be refactored)
-    onSensorChange(func, ...args) {
-        if (typeof func === "function") {
-            this.sensorChangeFunction.func = func.bind(this);
-            this.sensorChangeFunction.args = args;
-            return true;
-        }
-        else {
-            throw "First argument for onSensorChange() must be a function.";
-            return false;
-        }
-    }
-
-    onAnyReading(func, ...args) {
-        if (typeof func === "function") {
-            this.anyReadingFunction.func = func.bind(this);
-            this.anyReadingFunction.args = args;
-            return true;
-        }
-        else {
-            throw "First argument for onAnyReading() must be a function.";
-            return false;
-        }
-    }
-
-    onReading(sensorName, func, ...args) {
-        if (typeof func === "function") {
-            try {
-                console.log(this.readingFunction);
-                this.readingFunction[sensorName].func = func.bind(this);
-                this.readingFunction[sensorName].args = args;
-                return true
-
-            } catch (e) {
-                throw e;
-                throw "Incorrect sensor name provided. Must be 'button', 'knob', 'slider', 'joystick', 'distance', or 'color'";
-                return false;
-            }
-        }
-        else {
-            throw "First argument for onReading() must be a function.";
-            return false;
         }
     }
 

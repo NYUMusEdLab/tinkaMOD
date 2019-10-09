@@ -43,23 +43,31 @@ volumeSlider.oninput = function() {
     }
 }
 
+tinkamo.addEventListener('connect', function(event) {
+    // Set up event listeners used as examples.
+    if (event.tinkacore.name == 'tinka0') {
+        tinka0 = event.tinkacore;
+        e3();
+        e4();
+        e5();
+    }
+    connectionButton.className = "waves-effect waves-light btn-large blue darken-1";
+    connectionButton.innerHTML = "<i class='material-icons left'>bluetooth_connected</i>Connect another one!";
+}, connectionButton);
+
+tinkamo.addEventListener('disconnect', function(event) {
+    if (event.tinkacore.name == 'tinka0') {
+        connectionButton.className = "waves-effect waves-light btn-large red darken-1";
+        connectionButton.innerHTML = "<i class='material-icons left'>bluetooth</i>Connect your Tinkamo!";
+    }
+})
+
 // Callback functions
 window.onConnectionCallback = function() {
     if (Tone.context.state !== 'running') {
         Tone.context.resume();
     }
-    tinkamo.connect(function(tinkacore) {
-        // Set up event listeners used as examples.
-        if (tinkacore.name == 'tinka0') {
-            tinka0 = tinkacore;
-            e3();
-            e4();
-            e5();
-        }
-        connectionButton.className = "waves-effect waves-light btn-large blue darken-1"
-        connectionButton.innerHTML = "<i class='material-icons left'>bluetooth_connected</i>Connect another one!"
-    }, connectionButton);
-
+    tinkamo.connect();
 }
 
 window.e1 = function() {
@@ -117,16 +125,6 @@ window.e3 = function() {
         cell0.innerHTML = event.value;
         cell1.innerHTML = event.sensor;
     });
-    /*tinka0.onSensorChange(function(event) {
-        example3.innerHTML = '';
-        let row = example3.insertRow(0);
-
-        let cell0 = row.insertCell(0);
-        let cell1 = row.insertCell(1);
-
-        cell0.innerHTML = event.connected;
-        cell1.innerHTML = event.sensor;
-    });*/
 }
 
 window.e4 = function() {
@@ -140,16 +138,6 @@ window.e4 = function() {
         cell0.innerHTML = event.sensor;
         cell1.innerHTML = event.value;
     });
-    /*tinka0.onAnyReading(function(event) {
-        example4.innerHTML = '';
-        let row = example4.insertRow(0);
-
-        let cell0 = row.insertCell(0);
-        let cell1 = row.insertCell(1);
-
-        cell0.innerHTML = event.sensor;
-        cell1.innerHTML = event.value;
-    });*/
 }
 
 window.e5 = function() {
@@ -164,16 +152,4 @@ window.e5 = function() {
             example5.innerHTML = 'button was let up';
         }
     });
-
-    /*tinka0.onReading('button', function(value) {
-        if (value) {
-            let randomPitch = pitches[randomGenerator.value];
-            synth.triggerAttack(randomPitch);
-            example5.innerHTML = 'button was pressed down';
-        }
-        else {
-            synth.triggerRelease();
-            example5.innerHTML = 'button was let up';
-        }
-    });*/
 }

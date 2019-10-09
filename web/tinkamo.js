@@ -3,16 +3,23 @@ import { TinkaCore } from './tinkacore.js';
 
 export default class Tinkamo {
     constructor() {
+        // Static Variables
+        Tinkamo.eventTypes = ['*', 'connect', 'disconnect'];
+
+        // Instance Variables
         this.tinkacores = {};
         this.serviceName = 0xfffa;
 
+        this.events = [];
+
+        // Tracking of TinkaCores
         TinkaCore.core_ids = TinkaCore.core_ids || {
             connected: new Set([]),
             disconnected: new Set([])
         }
     }
 
-    connect(optionalCallback=null, ...args){
+    connect(){
         let self = this;
         console.log('Requesting Bluetooth Device...');
         let newDeviceID; // Hold on to the device ID for later
@@ -51,16 +58,40 @@ export default class Tinkamo {
             return self._add_tinkacore(newDeviceID, characteristics);
     	})
         .then(tinkacore => {
-            if (optionalCallback) {
-                if (typeof optionalCallback === "function") {
-                    optionalCallback(tinkacore, ...args);
-                }
-            }
+            this._callEventListeners({type: 'connect', tinkacore: tinkacore, tinkamo: this});
             console.log('Optional user callback')
         })
     	.catch(error => {
     	    console.log('Error', error);
     	});
+    }
+
+    // ----------- Events -----------
+    addEventListener(eventType, func, ...args) {
+        if (typeof func !== "function") {
+            throw "second argument must be a valid function";
+            return false;
+        }
+        if (!Tinkamo.eventTypes.includes(eventType)) {
+            throw "event type must be valid"; // list event types
+            return false;
+        }
+
+        let newEvent = {'eventType': eventType, 'func': func, 'args': args};
+        this.events.push(newEvent);
+        return true;
+    }
+
+    removeEventListener(eventType, func) {
+        this.events = this.events.filter(ev => (ev.eventType != eventType || ev.func != func));
+        return true;
+    }
+
+    _callEventListeners(event) {
+        for (let evObj of this.events) {
+            if (evObj.eventType == '*' || evObj.eventType == event.type)
+                evObj.func(event, ...evObj.args);
+        }
     }
 
     // ----------- Getters -----------
@@ -133,5 +164,9 @@ export default class Tinkamo {
         let disconnected_id = device.id;
 
         this.tinkacores[disconnected_id].disconnect();
+
+        this._callEventListeners({type: 'disconnect',
+                                  tinkacore: this.tinkacores[disconnected_id],
+                                  tinkamo: this});
     }
 }

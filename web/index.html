@@ -69,8 +69,8 @@
                 <div class="col s7">
                     <h5>Listen for when a sensor is connected or disconnected.</h5>
                     <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
-tinka0.onSensorChange(function(event) {
-    console.log(event.connected, event.sensor);
+tinka0.addEventListener('sensor change', function(event) {
+    console.log(event.value, event.sensor);
 });</code></pre>
                 </div>
                 <div class="col s5">
@@ -89,7 +89,7 @@ tinka0.onSensorChange(function(event) {
                 <div class="col s7">
                     <h5>Listen to all sensor readings.</h5>
                     <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
-tinka0.onAnyReading(function(event) {
+tinka0.addEventListener('reading', function(event) {
     console.log(event.sensor, event.value);
 });</code></pre>
                 </div>
@@ -109,8 +109,8 @@ tinka0.onAnyReading(function(event) {
                 <div class="col s7">
                     <h5>Or, specify a sensor.</h5>
                     <pre><code class="javascript">let tinka0 = tinkamo.getByName('tinka0')[0];
-tinka0.onReading('button', function(value) {
-    if (value) { console.log('button was pressed down'); }
+tinka0.addEventListener('button', function(event) {
+    if (event.value) { console.log('button was pressed down'); }
     else { console.log('button was let up'); }
 });</code></pre>
                 </div>
@@ -131,8 +131,8 @@ tinka0.onReading('button', function(value) {
 let pitches = ['F3', 'A3', 'A#3', 'C4', 'E4', 'F4', 'A4', 'A#4', 'C5', 'E5', 'F5'];
 
 let tinka0 = tinkamo.getByName('tinka0')[0];
-tinka0.onReading('button', function(value) {
-    if (value) {
+tinka0.addEventListener('button', function(event) {
+    if (event.value) {
         let randomPitch = pitches[randomGenerator.value];
         synth.triggerAttack(randomPitch);
     }
