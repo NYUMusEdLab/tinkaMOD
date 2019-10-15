@@ -1,5 +1,8 @@
 // TODO - Add Print Mode
-/** ***Class that represents a TinkaTop***
+/**
+ * Class that represents a generic TinkaTop.
+ * This sets up the shared methods used by all tops.
+ * Typically used as an 'unsupported' top.
  */
 class TinkaTop {
     /**
@@ -11,20 +14,25 @@ class TinkaTop {
         this.return_types = ['i'];
     }
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {number} Always returns 0
+     * Typically what the sensor detects.
+     * The default TinkaTop is not an actual sensor and only returns 0.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {0} Always returns 0
      */
     sense(command_id, command) {
         return 0;
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns the sensor values in the Open Sound Control (OSC) format.
+     * Can range from a list of one values or multiple values depending
+     * on the type of sensor.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {boolean | Object[]} args - a list of formatted OSC arguments
+     * @returns {string} arg.type - the data type
+     * @returns {*} arg.value - the sensor value
      */
     get_osc_args(command_id, command) {
         let reading = this.sense(command_id, command);
@@ -44,7 +52,8 @@ class TinkaTop {
         }
         return args;
     }
-    /** Get the value of id
+    /** Get the value of id.
+     *  ID's are determined by the Tinkamo hardware protocol.
      *  @returns {number}
      */
     get_id() {
@@ -65,7 +74,7 @@ class TinkaTop {
  */
 class Button extends TinkaTop {
     /**
-     * Creates an instance of the Button class
+     * Creates an instance of the Button class.
      */
     constructor() {
         super();
@@ -75,10 +84,10 @@ class Button extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns the state of the button, pressed (1) or depressed (0).
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {number}
      */
     sense(command_id, command) {
         let buttonState = command[0];
@@ -92,7 +101,7 @@ class Button extends TinkaTop {
  */
 class Knob extends TinkaTop {
     /**
-     * Creates an instance of the Knob class
+     * Creates an instance of the Knob class.
      */
     constructor() {
         super();
@@ -103,10 +112,12 @@ class Knob extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns the state of the potentiometer as a float in range -10 to 10.
+     * The mapping from voltage to value was estimated from the original run
+     * of Tinkamo and may need revision.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {number}
      */
     sense(command_id, command) {
         let fullNum = create_float(command);
@@ -135,10 +146,10 @@ class Slider extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns the state of the potentiometer as a float in range 0 to 10.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {number}
      */
     sense(command_id, command) {
         let sliderReading = 255 - command[0];
@@ -165,10 +176,11 @@ class Joystick extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns the X and Y positions as distance values from the center
+     * ranging from -10 to 10.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {number[]} an array of size 2 containing x and y
      */
     sense(command_id, command) {
         let horizontalInt = command[0];
@@ -203,10 +215,14 @@ class Distance extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * When distance of objects are in range, return a number, typically
+     * ranging from about 2 to 60.
+     * When the sensor becomes inaccurate due to objects lying at too great a
+     * distance, it sends a particular string of numbers that we interpret
+     * and return as false.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {number | boolean}
      */
     sense(command_id, command) {
         let distNum = create_float(command);
@@ -221,8 +237,6 @@ class Distance extends TinkaTop {
     }
 }
 
-// The color sensor seems like it is bugging out and will periodically flash
-// all black... An extra if-statement prevents this problem...
 /**
  * Class representing a Color TinkaTop
  * @extends TinkaTop
@@ -240,10 +254,14 @@ class Color extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
-     * @returns {*}
+     * Returns an array containing three integers refering to the red, green,
+     * and blue content of a surface captured by the sensor.
+     * The sensor may also send a value indicating that it stopped receiving
+     * color (e.g. when held too far from from a surface) which we interpret
+     * and return as false.
+     * @param {number} command_id
+     * @param {number[]} command
+     * @returns {boolean | number[]} array with three values [red, green, blue]
      */
     sense(command_id, command) {
         let red = command[0];
@@ -251,6 +269,8 @@ class Color extends TinkaTop {
         let blue = command[2];
         let brightness = command[3]; // Not used - unsure what it is
 
+        // The color sensor seems like it is bugging out and will periodically
+        // flash all black... An extra if-statement prevents this problem...
         // Hardware bug (feature?) - If all zeros, ignore
         if (!(red + green + blue)) {
             return false;
@@ -261,7 +281,8 @@ class Color extends TinkaTop {
 }
 
 /**
- * Class representing a Motor TinkaTop
+ * Class representing a Motor TinkaTop.
+ * STILL IN PROGRESS AND NOT TOTALLY SUPPORTED YET.
  * @extends TinkaTop
  */
 class Motor extends TinkaTop {
@@ -279,9 +300,9 @@ class Motor extends TinkaTop {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} command_id
-     * @param {*} command
+     * STILL IN PROGRESS - NOT FULLY IMPLEMENTED OR SUPPORTED
+     * @param {number} command_id
+     * @param {number[]} command
      * @returns {*}
      */
     sense(command_id, command){
@@ -308,15 +329,15 @@ class Motor extends TinkaTop {
 
 // ----------------------Helper Functions----------------------
 
-// Used for sensors which describe a floating point number with two values
 /**
- * Used to stitch together two numbers to create a float
- * @param {*} command
+ * The byte strings sent by the sensors represent decimal numbers in two
+ * positions in their command message.
+ * @param {number[]} command
  * @returns {number} The complete floating point number
  */
 function create_float(command) {
     if (command.length != 2) {
-        console.log('Create Float function called on incorrect sensor.');
+        throw 'Create Float function called on incorrect sensor.';
         return false;
     }
 
@@ -327,15 +348,16 @@ function create_float(command) {
     return fullNum;
 }
 
-// Mapping function that forces new number into final range
+//
 /**
- * DESCRIPTION HERE
- * @param {*} num
- * @param {*} in_min
- * @param {*} in_max
- * @param {*} out_min
- * @param {*} out_max
- * @returns {*}
+ * Simple mapping function. Output number is guaranteed to be within output
+ * range.
+ * @param {number} num
+ * @param {number} in_min
+ * @param {number} in_max
+ * @param {number} out_min
+ * @param {number} out_max
+ * @returns {number}
  */
 function mapToRange(num, in_min, in_max, out_min, out_max) {
     let mappedVal = (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
