@@ -2,7 +2,7 @@
 // Willie Payne
 // 2019
 
-import Tinkamo from "./tinkamo.js";
+import Tinkamo from "../src/tinkamo.js";
 
 // Variables to use in demo code
 let tinkamo = new Tinkamo();

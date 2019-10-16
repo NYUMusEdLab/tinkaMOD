@@ -1,10 +1,12 @@
 {
   "name": "@musedlab/tinkamod",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Connect Tinkamo devices in the browser",
   "main": "web/tinkamo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "parcel build example/index.html -d docs",
+    "example": "parcel example/index.html -d example_build"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,12 @@
     "url": "https://github.com/NYUMusEdLab/tinkaMOD/issues"
   },
   "homepage": "https://github.com/NYUMusEdLab/tinkaMOD#readme",
-  "files": ["web/tinkacore.js", "web/tinkatop.js", "web/tinkamo.js"]
+  "files": [
+    "src/tinkacore.js",
+    "src/tinkatop.js",
+    "src/tinkamo.js"
+  ],
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
 }
