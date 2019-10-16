@@ -1,8 +1,10 @@
 # Tinkamo + Javascript
 Readme to be updated...
 
-### Building the example docs
-```npm run doc```
+[**Check out the interactive Getting Started Doc.**](https://nyumusedlab.github.io/tinkaMOD/)
 
-### Contributing to the example
-```npm run example```
+## Contributing
+
+**Building the example doc:** `$ npm run doc`
+
+**Contributing to the example:** `$ npm run example`
