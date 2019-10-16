@@ -1,7 +1,18 @@
 // TODO - Support on disconnect callback...
 import { TinkaCore } from './tinkacore.js';
 
+/**
+* **Class for all Tinkamo**
+* Essentially a bucket containing all Tinkamo and functions handling when
+* TinkaCores are connected and disconnected to the browser.
+*
+* There really should only be one instance of Tinkamo per application.
+*/
 export default class Tinkamo {
+
+    /**
+     * Creates an instance of the Tinkamo class.
+     */
     constructor() {
         // Static Variables
         Tinkamo.eventTypes = ['*', 'connect', 'disconnect'];
@@ -19,6 +30,19 @@ export default class Tinkamo {
         }
     }
 
+    /**
+     * Primary method for connecting a new TinkaCore to the browser using
+     * the Chrome bluetooth api.
+     *
+     * Due to browser security, this function cannot be called directly,
+     * and instead must be a called from user action like pressing a button.
+     *
+     * @example
+     *
+     * let tinkamo = new Tinkamo();
+     * let connectionButton = document.getElementById('connectionButton');
+     * connectionButton.onclick = function() { tinkamo.connect(); }
+     */
     connect(){
         let self = this;
         console.log('Requesting Bluetooth Device...');
@@ -45,7 +69,7 @@ export default class Tinkamo {
             return device.gatt.connect()
     	})
     	.then(server => {
-                console.log(server);
+            console.log(server);
     	    return server.getPrimaryService(self.serviceName);
     	})
     	.then(service => {
@@ -67,6 +91,22 @@ export default class Tinkamo {
     }
 
     // ----------- Events -----------
+
+    /**
+     * Function allowing the user to define custom event listeners to be called
+     * when a Tinkamo instance triggers an event. Events are called in the
+     * order with which they were added.
+     *
+     * eventType must be one of the following:
+     * - '*' - connect or disconnect
+     * - 'connect'
+     * - 'disconnect'
+     *
+     * @param {string} eventType
+     * @param {function} func
+     * @param {...*} args
+     * @returns {boolean}
+     */
     addEventListener(eventType, func, ...args) {
         if (typeof func !== "function") {
             throw "second argument must be a valid function";
@@ -82,11 +122,26 @@ export default class Tinkamo {
         return true;
     }
 
+    /**
+     * Removes a callback function from the events list preventing further calls.
+     *
+     * @param {string} eventType
+     * @param {function} func
+     * @returns {boolean}
+     */
     removeEventListener(eventType, func) {
         this.events = this.events.filter(ev => (ev.eventType != eventType || ev.func != func));
         return true;
     }
 
+    /**
+     * Iterates through the events list and upon ANY TinkaCore event, calls
+     * the relevent functions.
+     *
+     * @param {string} event
+     * @returns {boolean}
+     * @private
+     */
     _callEventListeners(event) {
         for (let evObj of this.events) {
             if (evObj.eventType == '*' || evObj.eventType == event.type)
@@ -97,13 +152,18 @@ export default class Tinkamo {
     // ----------- Getters -----------
 
     /**
-     * Get a list of tinkacores. By default it returns tinkacores that have
+     * Get a list of TinkaCores. By default it returns tinkacores that have
      * been disconnected as well.
+     *
+     * TinkaCores are listed in the order with which they were originally
+     * connected.
+     *
+     * @param {boolean} [include_disconnected=true]
      * @returns {[Tinkacore]}
      */
     getTinkamoList(include_disconnected=true) {
-        // This returns disconnected objects as well
         let tinkaList = Object.values(this.tinkacores);
+        tinkaList.sort((a, b) => a.number - b.number);
         let fList = tinkaList.filter(t => (include_disconnected || t.connected));
         return fList;
     }
@@ -144,7 +204,13 @@ export default class Tinkamo {
 
     // Get and set name?
 
-    // Should only be called within connect()
+    /**
+     * Creates a new TinkaCore instance and uses TinkaCore functions
+     * to ensure it is tracked correctly.
+     *
+     * @returns {[Tinkacore]}
+     * @private
+     */
     _add_tinkacore(id, characteristics) {
         if (TinkaCore.core_ids.disconnected.has(id)) {
             this.tinkacores[id].reconnect(characteristics);
@@ -159,6 +225,13 @@ export default class Tinkamo {
     }
 
     // Should only be used as a callback function
+    /**
+     * Callback function triggered when a TinkaCore is turned off or becomes
+     * otherwise disconnectd.
+     *
+     * @returns {[Tinkacore]}
+     * @private
+     */
     _on_disconnected(event) {
         let device = event.target;
         let disconnected_id = device.id;

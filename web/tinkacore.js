@@ -1,40 +1,36 @@
-
-/**  ***Class representing a Tinkacore. ***
-*Currently Supports:
-*   Connection
-*       ID: 0
-*       Output: [0|1] string containing name of sensor attached <br>
-*   Button
-*       ID: 1
-*       Output: [0|1]
-*   Knob
-*       ID: 2
-*       Output: float ranging from -10 to 10
-*   Slider
-*       ID: 3
-*       Output: float ranging from 0 to 10
-*   Joystick
-*       ID: 4
-*       Output: horizontal float, vertical float ranging from -10 to 10
-*   Distance
-*       ID: 23
-*       Output: float ranging from 0 to 20
-*   Color
-*       ID: 27
-*       Output: red int, green int, blue int ranging from 0 to 255
-*/
-
 import {TinkaTop, Button, Knob, Slider, Joystick, Distance, Color, Motor} from './tinkatop.js';
 
+/**
+* **Class representing a Tinkacore.**
+* Currently Supports:
+* - Connection
+*     - ID: 0
+*     - Output: [0|1] string containing name of sensor attached
+* - Button
+*     - ID: 1
+*     - Output: [0|1]
+* - Knob
+*     - ID: 2
+*     - Output: float ranging from -10 to 10
+* - Slider
+*     - ID: 3
+*     - Output: float ranging from 0 to 10
+* - Joystick
+*     - ID: 4
+*     - Output: horizontal float, vertical float ranging from -10 to 10
+* - Distance
+*     - ID: 23
+*     - Output: float ranging from 0 to 20
+* - Color
+*     - ID: 27
+*     - Output: red int, green int, blue int ranging from 0 to 255
+*/
 class TinkaCore {
-
-    // Coming from the Static variable, this might also have a number
-    // for when it was added to the array
 
     /**
      * Creates an instance of the Tinkacore class
      * @param {number} id
-     * @param {*} characteristics
+     * @param {Object} characteristics
      */
     constructor(id, characteristics) {
 
@@ -55,6 +51,7 @@ class TinkaCore {
 
         // Core
         this.id = id;
+        this.number = TinkaCore.number_added;
         this.name = 'tinka' + TinkaCore.number_added;
         this.connected = true;
 
@@ -64,12 +61,20 @@ class TinkaCore {
         this.reading = {};
 
         // Event Listeners
-        this.events = []; // [ {'eventType': eventType, 'func': func, 'args': args} ]
+        // [ {'eventType': eventType, 'func': func, 'args': args} ]
+        this.events = [];
 
         TinkaCore.add_core(this.id);
     }
+
+    // ----------- Connection Methods -----------
+
     /**
-     * DESCRIPTION HERE
+     * Uses the Chrome Bluetooth API to connect the browser to a TinkaCore
+     * and begin subsribing to messages sent by the core.
+     *
+     * In Progress - Sends an initial message to the TinkaCore to determine
+     * its top.
      * @returns {boolean}
      */
     connect() {
@@ -90,7 +95,11 @@ class TinkaCore {
         return true;
     }
     /**
-     * DESCRIPTION HERE
+     * Called when a Tinkacore is turned off or the Bluetooth connection is
+     * otherwise lost.
+     *
+     * At the moment, this function is not meant to be called by the user
+     * since it does not stop subscription to sensor messages.
      * @returns {boolean}
      */
     disconnect() {
@@ -100,8 +109,9 @@ class TinkaCore {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} characteristics
+     * Called when a disconnected sensor is reconnected.
+     * At the moment, it simply calls the connect function.
+     * @param {Object} characteristics
      * @returns {boolean}
      */
     reconnect(characteristics) {
@@ -117,9 +127,13 @@ class TinkaCore {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} sensor_id
-     * @returns {*}
+     * Determines a sensor based on the sensor id, the appropriate
+     * TinkaTop and instantiates a new TinkaTop instance.
+     *
+     * Unsupported TinkaTops (e.g. LED Grid) are set to an instance of the
+     * of the generic TinkaTop class.
+     * @param {number} sensor_id
+     * @returns {TinkaTop}
      */
     connect_sensor(sensor_id) {
         switch (sensor_id) {
@@ -154,7 +168,7 @@ class TinkaCore {
         return this.sensor;
     }
     /**
-     * DESCRIPTION HERE
+     * Called when a TinkaTop is taken off of a TinkaCore.
      * @returns {boolean}
      */
     disconnect_sensor() {
@@ -165,10 +179,20 @@ class TinkaCore {
         return false;
     }
 
+    // ----------- Sensor Methods -----------
+
     /**
-     * DESCRIPTION HERE
-     * @param {*} event
-     * @returns {boolean}
+     * TinkaCores send byte strings of different lengths to indicate an
+     * important event like a sensor reading or connection.
+     * - (See the protocols folder for more info.)
+     *
+     * This is the main parser function that unpacks the byte string,
+     * interprets its length and meaning, and calls the appropriate functions.
+     *
+     * User defined event listeners are called here after messages are
+     * successfully parsed.
+     * @param {Object} event
+     * @returns {boolean} - true if interpretable, false otherwise
      */
     parse_packet(event) {
         let self = this;
@@ -191,8 +215,6 @@ class TinkaCore {
                 if (new_sensor_id == 255) { this.disconnect_sensor(); }
                 else { self.connect_sensor(new_sensor_id); }
 
-                // new - Iterate through event list
-                // useful to also get the entire tinkacore??
                 this._callEventListeners({type: 'sensor change',
                                          sensor: this.getSensorName(),
                                          value: this.sensor_connected,
@@ -216,6 +238,14 @@ class TinkaCore {
         }
     }
 
+    /**
+     * User called function to request the most recent value picked up by a
+     * sensor.
+     * - Return type depends on the sensor requested.
+     * - False if that sensor has not been used yet.
+     * @param {string} sensor_name
+     * @returns {number | number[] | false}
+     */
     getLastReading(sensor_name) {
         if (this.reading[sensor_name]) {
             return this.reading[sensor_name]
@@ -223,17 +253,34 @@ class TinkaCore {
         else { return false; }
     }
 
+    /**
+     * Getter for the name of the sensor.
+     * @returns {string}
+     */
     getSensorName() {
-        if (this.sensor_connected) {
-            return this.sensor.name;
-        }
-        else {
-            return 'none';
-        }
+        if (this.sensor_connected) return this.sensor.name;
+        else return 'none';
     }
 
-    // If I do func.bind(this) - will I be able to remove the function?
-    addEventListener(eventType, func, ...args) {
+    // ----------- Event Listeners -----------
+
+    /**
+     * Function allowing the user to define custom event listeners to be called
+     * when a TinkaCore instance triggers an event. Events are called in the
+     * order with which they were added.
+     *
+     * eventType must be one of the following:
+     * - '*' - any message sent by a TinkaCore
+     * - 'sensor change' - When a tinkatop is removed or added
+     * - 'reading' - when any sensor triggers a sensor reading
+     * - 'button', 'knob', 'slider', 'joystick', 'distance', 'color'
+     *
+     * @param {string} eventType
+     * @param {function} func
+     * @param {...*} args
+     * @returns {boolean}
+     */
+     addEventListener(eventType, func, ...args) {
         if (typeof func !== "function") {
             throw "second argument must be a valid function";
             return false;
@@ -243,21 +290,32 @@ class TinkaCore {
             return false;
         }
 
+        // Callbacks are not bound to the TinkaCore
         let newEvent = {'eventType': eventType, 'func': func, 'args': args};
         this.events.push(newEvent);
         return true;
     }
 
+    /**
+     * Removes a callback function from the events list preventing further calls.
+     *
+     * @param {string} eventType
+     * @param {function} func
+     * @returns {boolean}
+     */
     removeEventListener(eventType, func) {
         this.events = this.events.filter(ev => (ev.eventType != eventType || ev.func != func));
         return true;
     }
 
-    // removeAllEventListeners function?
-    // We could have a special object flag that prevents removal for some?
-
-    // eventType is the name of the event
-    // event args is an object containing relevent info about the event
+    /**
+     * Iterates through the events list and upon ANY TinkaCore event, calls
+     * the relevent functions.
+     *
+     * @param {string} event
+     * @returns {boolean}
+     * @private
+     */
     _callEventListeners(event) {
         for (let evObj of this.events) {
             if (
@@ -265,9 +323,7 @@ class TinkaCore {
                 (evObj.eventType == 'reading' && event.type == 'reading') ||
                 (evObj.eventType == event.sensor) ||
                 (evObj.eventType == 'sensor change' && event.type == 'sensor change')
-            ) {
-                evObj.func(event, ...evObj.args);
-            }
+            ) evObj.func(event, ...evObj.args);
         }
     }
 
@@ -275,8 +331,9 @@ class TinkaCore {
      * Function that gets called right when a Tinkacore is first connected and
      * begins subscribing to messages. Determines if it is a motor and what
      * sensor if any is currently connected.
-     * @param {*} event
+     * @param {Object} event
      * @returns {boolean}
+     * @private
      */
     who_am_i(event) {
         let self = this;
@@ -311,12 +368,15 @@ class TinkaCore {
         return found;
     }
 
-    // Static Methods for keeping track globally of
-    // what cores we have connected
+    // ----------- Static Methods -----------
+
     /**
-     * DESCRIPTION HERE
-     * @param {*} peripheral_id
-     * @returns {*}
+     * Keeps track of the Tinkacores that have been added.
+     * Adds a TinkaCore ID to the connected set, and removes it from the
+     * disconnected set if it has already been connected.
+     * @param {string} peripheral_id
+     * @returns {string}
+     * @private
      */
     static add_core(peripheral_id) {
         // Check if TinkaCore is undefined
@@ -331,9 +391,10 @@ class TinkaCore {
     }
 
     /**
-     * DESCRIPTION HERE
-     * @param {*} peripheral_id
-     * @returns {*}
+     * Moves a TinkaCore ID from the connected set to the disconnected set.
+     * @param {string} peripheral_id
+     * @returns {string}
+     * @private
      */
     static remove_core(peripheral_id) {
         TinkaCore.core_ids.connected.delete(peripheral_id);
@@ -341,18 +402,17 @@ class TinkaCore {
         return peripheral_id;
     }
 
-
-    //handles all kinds of messages
-    //only motor message for now
     /**
-     * DESCRIPTION HERE
-     * @param {*} direction
-     * @param {*} intensityInt
-     * @param {*} intensityDecimal
-     * @returns {*}
+     * In process function - forms and sends a message to a Tinkacore
+     * that controls the motor. It can also be used to request the type of
+     * TinkaTop indicated in the device's response.
+     * @param {number} direction
+     * @param {number} intensityInt
+     * @param {number} intensityDecimal
+     * @returns {number[]}
      */
     static createMessage(direction, intensityInt, intensityDecimal){
-        var motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
+        let motorMessage = new Uint8Array([90,171, 10,0,0,2,5,0,0,direction, intensityInt, intensityDecimal]);
         return motorMessage;
     }
 }
