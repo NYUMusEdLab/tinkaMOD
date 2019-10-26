@@ -51,13 +51,13 @@ tinkamo.addEventListener('connect', function(event) {
         e4();
         e5();
     }
-    connectionButton.className = "waves-effect waves-light btn-large blue darken-1";
+    connectionButton.className = "waves-effect waves-light btn-large purple darken-1";
     connectionButton.innerHTML = "<i class='material-icons left'>bluetooth_connected</i>Connect another one!";
 }, connectionButton);
 
 tinkamo.addEventListener('disconnect', function(event) {
     if (event.tinkacore.name == 'tinka0') {
-        connectionButton.className = "waves-effect waves-light btn-large red darken-1";
+        connectionButton.className = "waves-effect waves-light btn-large blue darken-1";
         connectionButton.innerHTML = "<i class='material-icons left'>bluetooth</i>Connect your Tinkamo!";
     }
 })

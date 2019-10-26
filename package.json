@@ -1,11 +1,13 @@
 {
   "name": "@musedlab/tinkamod",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Connect Tinkamo devices in the browser",
   "main": "web/tinkamo.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "parcel build example/index.html --public-url /tinkaMOD/ -d docs",
+    "doc": "npm run jdoc & npm run example_build",
+    "jdoc": "jsdoc src -d docs/JSDoc",
+    "example_build":"parcel build example/index.html --public-url /tinkaMOD/ -d docs",
     "example": "parcel example/index.html -d example_build"
   },
   "repository": {
@@ -24,6 +26,7 @@
     "src/tinkamo.js"
   ],
   "devDependencies": {
+    "jsdoc": "^3.6.3",
     "parcel-bundler": "^1.12.4"
   }
 }
