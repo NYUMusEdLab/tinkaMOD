@@ -1,0 +1,81 @@
+<head>
+    <title>Tinkamo Lib</title>
+
+    <!-- Globally shared libraries -->
+    <script src="jquery.min.js"></script>
+    <script src="genericlib.js"></script>
+    <script src="bluetooth.js"></script>
+    <script src="event-dispatcher.js"></script>
+
+    <!-- Bass class of all Tinkamo Module classes -->
+    <script src="t-module/t-module.js"></script>
+    <script src="t-module/t-core-module.js"></script>
+
+    <!-- Individual classes for modules. Use on demand. -->
+    <script src="t-module/t-module-motor.js"></script>
+    <script src="t-module/t-func-module-button.js"></script>
+
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 32px;
+        }
+        .button {
+            width: 240px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            background-color: lightgrey;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:active {
+            background-color: grey;
+        }
+    </style>
+
+    <script>
+        window.onload = function () {
+            new Bluetooth() // Bluetooth must initialize for once
+            bindConnectionButton($('.buttonConnection'))
+
+            button = new TFunctionModuleButton()
+            button.onButtonChange = function (v) {
+                $('#titleButton>span').html(v? 'Pressed': 'Released')
+            }
+
+            motor = new TModuleMotor()
+            $('#buttonMotor-10').click(function () {
+                motor.setSpeed(-10)
+            })
+            $('#buttonMotor0').click(function () {
+                motor.setSpeed(0)
+            })
+            $('#buttonMotor10').click(function () {
+                motor.setSpeed(10)
+            })
+
+        }
+
+        function bindConnectionButton (selector) {
+            selector.click(async function () {
+                let moduleName = $(this).attr('module')
+                let module = window[moduleName]
+                console.log(moduleName)
+                if (module) {
+                    await module.connectToModule(true)
+                }
+            })
+        }
+    </script>
+
+</head>
+<body>
+    <h1 id="titleButton">Button <span></span></h1>
+    <div class="button buttonConnection" module="button">Connect</div>
+    <h1>Motor</h1>
+    <div class="button buttonConnection" module="motor">Connect</div>
+    <div id="buttonMotor-10" class="button">-10</div>
+    <div id="buttonMotor0" class="button">0</div>
+    <div id="buttonMotor10" class="button">10</div>
+</body>
