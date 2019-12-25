@@ -4,10 +4,10 @@
 * http://tinkamo.com
 *
 * Copyright 2018-2019 Tinkamo
-* Rev 2019-11-30 By Jam Zhang
+* Rev 2019-12-25 By Jam Zhang
 */
 
-// jshint esversion: 6
+// jshint esversion: 8
 
 // -----------------------------------------------------------------------------
 // TFunctionModuleColor Class
@@ -30,7 +30,8 @@ class TFunctionModuleColor extends TCoreModule {
         super.onBLENotify(value); // Must call the super method first!
         let modelNumber = value[6]
         let command = value[8]
-        if (command != 0) return // Only accept color sensor input command
+        
+        if (command != 0 || value.length < 17) return // Only accept color sensor input command. Port change command is also 0 but the length is 13.
  
         // Get the raw sensor output
         let a = value[16] // Ambient value
@@ -43,7 +44,9 @@ class TFunctionModuleColor extends TCoreModule {
         // console.clear()
         // console.log('Model', modelNumber, 'RGB', r0, g0, b0)
 
-        if (a < 1) { // A low ambient value means the sensor is contacting with the object
+        // An ambient value < 1 means the sensor is contacting with the object
+        // An IR value == 255 means the hardware thinks the sensor is not contacting with the object
+        if (a < 1 && ir < 255) {
             // Algorithm A - Deprecated
             // f = TFunctionModuleColor.INTERPOLATION_DATA_201908 // Choose a set off matching factors
             // r = r0 * f.xr + f.dr - a * f.xar // Red value
